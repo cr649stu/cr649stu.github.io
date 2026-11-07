@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>个人作品 · 王开怀</title>
+<meta name="description" content="王开怀的个人作品：校园全栈站点、图书借阅系统、学生学籍系统。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231b3a8b'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="bar">
+    <a class="brand" href="index.html">王开怀</a>
+    <nav class="menu" aria-label="主导航">
+      <a href="index.html">返回首页</a>
+      <a href="works.html" class="is-active is-featured" aria-current="page">个人作品</a>
+      <a href="education.html">教育背景</a>
+      <a href="skills.html">专业技能</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <header class="head-split">
+    <div>
+      <p class="head-kicker">WORKS</p>
+      <h1 class="page-title">个人作品</h1>
+      <p class="page-sub">七个作品，都可以打开试一下。</p>
+    </div>
+    <dl class="head-meta">
+      <div><dt>作品</dt><dd>07</dd></div>
+      <div><dt>类型</dt><dd>全栈 · 数据 · 小工具</dd></div>
+    </dl>
+  </header>
+
+  <section class="works">
+    <article class="work work-wide"><span class="work-index">01</span>
+      <h2>毕业之前 · 校园全栈站点</h2>
+      <p>
+        把个人博客、问答社区与迷你商城合并成一个校园毕业主题站点，
+        共用一套账号与导航。React + Express + SQLite，含 JWT 登录、
+        Markdown 渲染与下单事务扣库存。
+      </p>
+      <ul class="work-tags">
+        <li>React 19</li>
+        <li>TypeScript</li>
+        <li>Express</li>
+        <li>SQLite</li>
+      </ul>
+      <a class="work-link" href="works-before-graduation.html">打开可点原型 →</a>
+    </article>
+
+    <article class="work"><span class="work-index">02</span>
+      <h2>传奇抽卡 · 足球球员卡牌游戏</h2>
+      <p>
+        301 名球员、367 张卡，传奇 / 史诗 / 精选 / 普通四种稀有度；每日赠券、
+        答题得券，抽到的球员可以排进四种阵型。三百多张卡面全部由内嵌 SVG 绘制。
+      </p>
+      <ul class="work-tags">
+        <li>原生 JS</li>
+        <li>SVG 立绘</li>
+        <li>localStorage</li>
+      </ul>
+      <a class="work-link" href="works-gacha.html">打开游戏 →</a>
+    </article>
+
+    <article class="work"><span class="work-index">03</span>
+      <h2>社团活动管理 · 信息管理系统</h2>
+      <p>
+        四张表（用户资料 / 社团 / 活动 / 报名）串起报名流程：同一活动同一人只能报一次，
+        名额由触发器在数据库层拦截，普通学生与负责人的界面差异来自 RLS 行级权限。
+      </p>
+      <ul class="work-tags">
+        <li>Supabase</li>
+        <li>PostgreSQL</li>
+        <li>RLS</li>
+        <li>触发器</li>
+      </ul>
+      <a class="work-link" href="works-clubhub.html">打开可点原型 →</a>
+    </article>
+
+    <article class="work"><span class="work-index">04</span>
+      <h2>计时器 · 静态小工具</h2>
+      <p>
+        开始、暂停、重置三个按钮，时分秒显示。单文件 HTML + CSS + 原生 JS，
+        计时用时间戳而不是每秒累加，切到后台再回来依然准确。
+      </p>
+      <ul class="work-tags">
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>原生 JS</li>
+      </ul>
+      <a class="work-link" href="works-timer.html">打开计时器 →</a>
+    </article>
+
+    <article class="work"><span class="work-index">05</span>
+      <h2>栖木书房 · 图书借阅管理</h2>
+      <p>
+        零第三方依赖的图书借还系统：借出与归还在同一事务里修正库存，
+        逾期清单按应还日期自动汇总，所有写操作进入审计日志。
+        Python 标准库 + SQLite，零依赖，装好 Python 就能跑。
+      </p>
+      <ul class="work-tags">
+        <li>Python</li>
+        <li>SQLite</li>
+        <li>原生 JS</li>
+        <li>事务</li>
+      </ul>
+    </article>
+
+    <article class="work"><span class="work-index">06</span>
+      <h2>青禾学籍 · 学生信息管理</h2>
+      <p>
+        单文件前端配 Supabase 后端：Auth 登录、RLS 行级权限、触发器审计，
+        Realtime 订阅让多人同时修改也能即时刷新，一份 SQL 脚本即可建库。
+      </p>
+      <ul class="work-tags">
+        <li>Supabase</li>
+        <li>PostgreSQL</li>
+        <li>RLS</li>
+        <li>单文件前端</li>
+      </ul>
+    </article>
+
+    <article class="work"><span class="work-index">07</span>
+      <h2>本站 · 个人主页</h2>
+      <p>
+        你现在看的这个站：手写的 HTML 与 CSS，
+        没有框架、没有构建步骤，托管在 GitHub Pages 上。
+      </p>
+      <ul class="work-tags">
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>GitHub Pages</li>
+      </ul>
+    </article>
+  </section>
+</main>
+
+</body>
+</html>

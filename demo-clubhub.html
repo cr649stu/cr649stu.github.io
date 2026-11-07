@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>社团活动管理 · ClubHub</title>
+<style>
+  :root{
+    --bg:#f6f8fc; --card:#fff; --ink:#101828; --soft:#475467; --muted:#98a2b3;
+    --line:#e4e7ec; --blue:#1b3a8b; --blue-soft:#eef3ff;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.7 "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer}
+  h1,h2,h3{margin:0;line-height:1.35}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* 登录 */
+  .login{min-height:100vh;display:grid;place-items:center;padding:32px 20px}
+  .login-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:32px}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .brand-mark{width:34px;height:34px;border-radius:9px;background:var(--blue);color:#fff;
+    display:grid;place-items:center;font-weight:700;font-size:15px}
+  .brand h1{font-size:19px;letter-spacing:.02em}
+  .brand small{display:block;font-size:10px;letter-spacing:.2em;color:var(--muted)}
+  .hint{font-size:12.5px;color:var(--muted);margin:14px 0 20px}
+  .field{display:block;margin-bottom:14px}
+  .field span{display:block;font-size:12px;color:var(--soft);margin-bottom:6px;letter-spacing:.06em}
+  .field input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;
+    background:#fff;font:inherit;color:var(--ink);outline:none;transition:border-color .2s}
+  .field input:focus{border-color:var(--blue)}
+  .btn{border:0;border-radius:9px;padding:10px 18px;font-size:14px;
+    background:var(--blue);color:#fff;transition:opacity .2s}
+  .btn:hover{opacity:.92}
+  .btn.block{width:100%}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--soft)}
+  .btn.ghost:hover{border-color:var(--blue);color:var(--blue);opacity:1}
+  .btn.small{padding:6px 12px;font-size:12.5px;border-radius:7px}
+  .switch{margin-top:16px;font-size:13px;color:var(--soft);text-align:center}
+  .switch button{color:var(--blue);background:none;border:0;padding:0;font:inherit}
+  .demo-box{margin-top:20px;padding-top:16px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--muted)}
+  .demo-box code{background:var(--blue-soft);color:var(--blue);padding:1px 6px;border-radius:5px}
+
+  /* 应用外壳 */
+  .top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .top-in{max-width:1080px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:18px}
+  .top .brand{margin:0}
+  .nav{display:flex;gap:6px;margin-left:14px}
+  .nav button{background:none;border:0;padding:8px 14px;border-radius:8px;color:var(--soft);font-size:14px}
+  .nav button.on{background:var(--blue-soft);color:var(--blue);font-weight:600}
+  .user{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--soft)}
+  .role{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--blue-soft);color:var(--blue)}
+
+  main{padding:28px 0 60px}
+  .page-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:18px}
+  .page-head h2{font-size:22px;letter-spacing:.01em}
+  .page-head p{margin:0;font-size:13px;color:var(--muted)}
+  .page-head .grow{flex:1}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .stat b{display:block;font-size:24px;line-height:1.3;color:var(--blue);font-variant-numeric:tabular-nums}
+  .stat span{font-size:12px;color:var(--muted);letter-spacing:.08em}
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .chip{padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;
+    color:var(--soft);font-size:13px;transition:.2s}
+  .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+  .list{display:grid;gap:12px}
+  .act{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;
+    display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:start;transition:border-color .2s}
+  .act:hover{border-color:#c7d2e8}
+  .act h3{font-size:17px}
+  .act .meta{margin-top:6px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 16px}
+  .act .club{display:inline-block;font-size:11.5px;color:var(--blue);background:var(--blue-soft);
+    padding:1px 9px;border-radius:6px;margin-right:8px}
+  .act .desc{margin-top:8px;font-size:13.5px;color:var(--soft)}
+  .bar{margin-top:12px;height:5px;border-radius:999px;background:#eef1f6;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--blue);border-radius:999px}
+  .side{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  .seats{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .state{font-size:12.5px;color:var(--blue);border:1px solid var(--blue-soft);background:var(--blue-soft);
+    padding:5px 12px;border-radius:999px}
+
+  .empty{padding:36px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--radius);background:#fff}
+
+  /* 管理 */
+  .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid2 .field{margin:0}
+  .panel h3{font-size:15px;margin-bottom:14px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+  th{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.06em}
+  td .btn{margin-left:4px}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:#111827;color:#fff;padding:10px 18px;border-radius:9px;font-size:13px;
+    opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:760px){
+    .nav{display:none}
+    .stats{grid-template-columns:1fr}
+    .act{grid-template-columns:1fr}
+    .side{flex-direction:row;align-items:center;justify-content:space-between}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+window.APP_CONFIG = {
+  // 填上这两个值就切换到真实 Supabase；留空则进入本地演示模式
+  supabaseUrl: "",
+  supabaseAnonKey: ""
+};
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var CONFIG = window.APP_CONFIG || {};
+  var DEMO = !CONFIG.supabaseUrl || !CONFIG.supabaseAnonKey;
+  var KEY = "clubhub.demo.v2";
+  var SESSION_KEY = "clubhub.session";
+
+  var app = document.getElementById("app");
+  var toastEl = document.getElementById("toast");
+
+  var state = {
+    user: null,          // { id, name, role }
+    view: "list",        // list | mine | manage
+    filter: "全部",
+    activities: [],
+    clubs: [],
+    stats: {},
+    mine: [],
+    authMode: "signin",  // signin | signup
+    busy: false
+  };
+
+  /* ---------------- 工具 ---------------- */
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { toastEl.classList.remove("show"); }, 2400);
+  }
+  function money(n) { return n; }
+  function fmt(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return iso;
+    var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  /* ---------------- 演示模式的数据层 ---------------- */
+  function seed() {
+    var now = Date.now(), day = 86400000;
+    return {
+      users: [
+        { id: "u1", email: "student@demo.cn", password: "123456", name: "林一", role: "student" },
+        { id: "u2", email: "club@demo.cn", password: "123456", name: "陈默", role: "organizer" }
+      ],
+      clubs: [
+        { id: "c1", name: "摄影社", description: "每月一次外拍，器材可以借。" },
+        { id: "c2", name: "跑步社", description: "每周三、周六晚操场集合。" },
+        { id: "c3", name: "辩论队", description: "赛前集训与模拟赛，欢迎旁听。" }
+      ],
+      activities: [
+        { id: "a1", club_id: "c1", title: "校园夜景外拍", description: "带上相机，没有器材也可以来，社里有两台备用机。",
+          location: "图书馆北门集合", starts_at: new Date(now + 3 * day).toISOString(), capacity: 20, status: "open", created_by: "u2" },
+        { id: "a2", club_id: "c2", title: "十公里拉练", description: "配速分 6 分和 7 分两组，跑完一起吃饭。",
+          location: "东操场", starts_at: new Date(now + 5 * day).toISOString(), capacity: 30, status: "open", created_by: "u2" },
+        { id: "a3", club_id: "c3", title: "新生辩论赛模拟场", description: "正反双方各四辩，赛后复盘。",
+          location: "文学院 302", starts_at: new Date(now + 7 * day).toISOString(), capacity: 16, status: "open", created_by: "u2" },
+        { id: "a4", club_id: "c1", title: "毕业季人像拍摄", description: "给大四同学拍一组毕业照，需要有人帮忙打光。",
+          location: "南门草坪", starts_at: new Date(now + 9 * day).toISOString(), capacity: 12, status: "open", created_by: "u2" }
+      ],
+      registrations: [
+        { id: "r1", activity_id: "a2", user_id: "u1", status: "registered", note: "", created_at: new Date(now - day).toISOString() }
+      ]
+    };
+  }
+  function loadDemo() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { /* ignore */ }
+    var data = seed();
+    saveDemo(data);
+    return data;
+  }
+  function saveDemo(data) {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
+  }
+  function demoUser(data, email, password) {
+    for (var i = 0; i < data.users.length; i++) {
+      if (data.users[i].email === email && data.users[i].password === password) return data.users[i];
+    }
+    return null;
+  }
+
+  /* ---------------- Supabase 数据层 ---------------- */
+  function headers(extra) {
+    var h = { apikey: CONFIG.supabaseAnonKey, "Content-Type": "application/json" };
+    if (state.token) h.Authorization = "Bearer " + state.token;
+    if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
+    return h;
+  }
+  function api(path, opts) {
+    opts = opts || {};
+    return fetch(CONFIG.supabaseUrl + path, {
+      method: opts.method || "GET",
+      headers: headers(opts.headers),
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      return r.text().then(function (text) {
+        var data = text ? JSON.parse(text) : null;
+        if (!r.ok) throw new Error((data && (data.message || data.error_description || data.hint)) || ("请求失败 " + r.status));
+        return data;
+      });
+    });
+  }
+
+  var store = {
+    demo: DEMO,
+
+    signIn: function (email, password) {
+      if (DEMO) {
+        var data = loadDemo();
+        var u = demoUser(data, email, password);
+        if (!u) return Promise.reject(new Error("账号或密码不对，试试下面的演示账号"));
+        state.user = { id: u.id, name: u.name, role: u.role };
+        return Promise.resolve(state.user);
+      }
+      return fetch(CONFIG.supabaseUrl + "/auth/v1/token?grant_type=password", {
+        method: "POST",
+        headers: { apikey: CONFIG.supabaseAnonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password })
+      }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error_description || "登录失败"); return d; }); })
+        .then(function (session) {
+          state.token = session.access_token;
+          return api("/rest/v1/profiles?select=*&id=eq." + session.user.id);
+        })
+        .then(function (rows) {
+          var p = rows[0] || {};
+          state.user = { id: p.id, name: p.full_name || "同学", role: p.role || "student" };
+          try { localStorage.setItem(SESSION_KEY, JSON.stringify({ token: state.token, user: state.user })); } catch (e) {}
+          return state.user;
+        });
+    },
+
+    signUp: function (email, password, name) {
+      if (DEMO) return Promise.reject(new Error("演示模式下请直接用演示账号登录"));
+      return fetch(CONFIG.supabaseUrl + "/auth/v1/signup", {
+        method: "POST",
+        headers: { apikey: CONFIG.supabaseAnonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password, data: { full_name: name } })
+      }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.msg || d.error_description || "注册失败"); return d; }); });
+    },
+
+    signOut: function () {
+      state.user = null; state.token = null;
+      try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+      return Promise.resolve();
+    },
+
+    load: function () {
+      if (DEMO) {
+        var data = loadDemo();
+        state.clubs = data.clubs.slice();
+        state.activities = data.activities.map(function (a) {
+          var regs = data.registrations.filter(function (r) { return r.activity_id === a.id && r.status === "registered"; });
+          return Object.assign({}, a, { registered: regs.length });
+        }).sort(function (a, b) { return a.starts_at < b.starts_at ? -1 : 1; });
+        state.mine = data.registrations
+          .filter(function (r) { return r.user_id === state.user.id && r.status === "registered"; })
+          .map(function (r) { return r.activity_id; });
+        return Promise.resolve();
+      }
+
+      return Promise.all([
+        api("/rest/v1/activities?select=*&order=starts_at.asc"),
+        api("/rest/v1/clubs?select=*"),
+        api("/rest/v1/rpc/activity_stats"),
+        api("/rest/v1/registrations?select=activity_id&status=eq.registered&user_id=eq." + state.user.id)
+      ]).then(function (res) {
+        var statsMap = {};
+        res[2].forEach(function (s) { statsMap[s.activity_id] = s; });
+        state.clubs = res[1];
+        state.activities = res[0].map(function (a) {
+          var s = statsMap[a.id] || { registered: 0, remaining: a.capacity };
+          return Object.assign({}, a, { registered: s.registered, remaining: s.remaining });
+        });
+        state.mine = res[3].map(function (r) { return r.activity_id; });
+      });
+    },
+
+    register: function (activityId) {
+      if (DEMO) {
+        var data = loadDemo();
+        var act = data.activities.filter(function (a) { return a.id === activityId; })[0];
+        var taken = data.registrations.filter(function (r) {
+          return r.activity_id === activityId && r.status === "registered";
+        }).length;
+        if (act.status !== "open") return Promise.reject(new Error("该活动已关闭报名"));
+        if (taken >= act.capacity) return Promise.reject(new Error("名额已满"));
+        var exists = data.registrations.filter(function (r) {
+          return r.activity_id === activityId && r.user_id === state.user.id;
+        })[0];
+        if (exists) { exists.status = "registered"; }
+        else {
+          data.registrations.push({
+            id: "r" + Date.now(), activity_id: activityId, user_id: state.user.id,
+            status: "registered", note: "", created_at: new Date().toISOString()
+          });
+        }
+        saveDemo(data);
+        return Promise.resolve();
+      }
+      return api("/rest/v1/registrations?on_conflict=activity_id,user_id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: { activity_id: activityId, user_id: state.user.id, status: "registered" }
+      });
+    },
+
+    cancel: function (activityId) {
+      if (DEMO) {
+        var data = loadDemo();
+        data.registrations.forEach(function (r) {
+          if (r.activity_id === activityId && r.user_id === state.user.id) r.status = "cancelled";
+        });
+        saveDemo(data);
+        return Promise.resolve();
+      }
+      return api("/rest/v1/registrations?activity_id=eq." + activityId + "&user_id=eq." + state.user.id, {
+        method: "PATCH",
+        body: { status: "cancelled" }
+      });
+    },
+
+    createActivity: function (payload) {
+      if (DEMO) {
+        var data = loadDemo();
+        data.activities.push({
+          id: "a" + Date.now(), club_id: payload.club_id, title: payload.title,
+          description: payload.description, location: payload.location,
+          starts_at: payload.starts_at, capacity: payload.capacity,
+          status: "open", created_by: state.user.id
+        });
+        saveDemo(data);
+        return Promise.resolve();
+      }
+      return api("/rest/v1/activities", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: Object.assign({}, payload, { created_by: state.user.id })
+      });
+    },
+
+    setStatus: function (activityId, status) {
+      if (DEMO) {
+        var data = loadDemo();
+        data.activities.forEach(function (a) { if (a.id === activityId) a.status = status; });
+        saveDemo(data);
+        return Promise.resolve();
+      }
+      return api("/rest/v1/activities?id=eq." + activityId, {
+        method: "PATCH", body: { status: status }
+      });
+    }
+  };
+
+  /* ---------------- 渲染 ---------------- */
+  function loginView() {
+    var isSignup = state.authMode === "signup";
+    return '' +
+      '<div class="login"><div class="login-card">' +
+        '<div class="brand"><span class="brand-mark">社</span>' +
+          '<div><h1>社团活动管理</h1><small>CLUBHUB</small></div></div>' +
+        '<p class="hint">登录后可以查看活动、报名，负责人还能发布活动。</p>' +
+        '<form id="authForm">' +
+          (isSignup ? '<label class="field"><span>姓名</span><input name="name" required placeholder="你的名字" /></label>' : '') +
+          '<label class="field"><span>邮箱</span><input name="email" type="email" required placeholder="you@example.com" /></label>' +
+          '<label class="field"><span>密码</span><input name="password" type="password" required minlength="6" placeholder="至少 6 位" /></label>' +
+          '<button class="btn block" type="submit">' + (isSignup ? "注册" : "登录") + '</button>' +
+        '</form>' +
+        (DEMO && !isSignup
+          ? '<button class="btn ghost block" type="button" data-demo style="margin-top:10px">一键进入演示（负责人）</button>'
+          : '') +
+        '<p class="switch">' + (isSignup ? "已经有账号？" : "还没有账号？") +
+          ' <button type="button" data-auth="' + (isSignup ? "signin" : "signup") + '">' +
+          (isSignup ? "去登录" : "去注册") + '</button></p>' +
+        (DEMO ? '<div class="demo-box">当前是本地演示模式（数据存在浏览器里）。<br>' +
+          '学生账号 <code>student@demo.cn</code> / <code>123456</code><br>' +
+          '负责人账号 <code>club@demo.cn</code> / <code>123456</code></div>' : '') +
+      '</div></div>';
+  }
+
+  function shell(inner) {
+    var role = state.user.role === "organizer" ? "负责人" : "学生";
+    return '' +
+      '<header class="top"><div class="top-in">' +
+        '<div class="brand"><span class="brand-mark">社</span>' +
+          '<div><h1>社团活动管理</h1><small>CLUBHUB</small></div></div>' +
+        '<nav class="nav">' +
+          '<button data-view="list" class="' + (state.view === "list" ? "on" : "") + '">活动</button>' +
+          '<button data-view="mine" class="' + (state.view === "mine" ? "on" : "") + '">我的报名</button>' +
+          (state.user.role === "organizer" ? '<button data-view="manage" class="' + (state.view === "manage" ? "on" : "") + '">管理</button>' : '') +
+        '</nav>' +
+        '<div class="user"><span>' + esc(state.user.name) + '</span>' +
+          '<span class="role">' + role + '</span>' +
+          '<button class="btn ghost small" data-act="logout">退出</button></div>' +
+      '</div></header>' +
+      '<main><div class="wrap">' + inner + '</div></main>';
+  }
+
+  function statsHTML() {
+    var total = state.activities.length;
+    var regs = state.activities.reduce(function (n, a) { return n + (a.registered || 0); }, 0);
+    var mine = state.mine.length;
+    return '<section class="stats">' +
+      '<div class="stat"><b>' + total + '</b><span>在招活动</span></div>' +
+      '<div class="stat"><b>' + regs + '</b><span>累计报名</span></div>' +
+      '<div class="stat"><b>' + mine + '</b><span>我的报名</span></div>' +
+    '</section>';
+  }
+
+  function activityCard(a) {
+    var club = state.clubs.filter(function (c) { return c.id === a.club_id; })[0] || { name: "未分组" };
+    var taken = a.registered || 0;
+    var pct = Math.min(100, Math.round((taken / a.capacity) * 100));
+    var mine = state.mine.indexOf(a.id) > -1;
+    var closed = a.status !== "open";
+    var full = taken >= a.capacity;
+
+    var action;
+    if (mine) action = '<button class="btn ghost small" data-cancel="' + a.id + '">取消报名</button>';
+    else if (closed) action = '<span class="seats">已关闭</span>';
+    else if (full) action = '<span class="seats">已满</span>';
+    else action = '<button class="btn small" data-reg="' + a.id + '">报名</button>';
+
+    return '<article class="act">' +
+      '<div><h3><span class="club">' + esc(club.name) + '</span>' + esc(a.title) + '</h3>' +
+        '<div class="meta"><span>' + fmt(a.starts_at) + '</span><span>' + esc(a.location) + '</span></div>' +
+        '<p class="desc">' + esc(a.description) + '</p>' +
+        '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+      '</div>' +
+      '<div class="side"><span class="seats">' + taken + " / " + a.capacity + ' 人</span>' +
+        (mine ? '<span class="state">已报名</span>' : '') + action + '</div>' +
+    '</article>';
+  }
+
+  function listView() {
+    var clubs = ["全部"].concat(state.clubs.map(function (c) { return c.name; }));
+    var chips = clubs.map(function (name) {
+      return '<button class="chip' + (state.filter === name ? " on" : "") + '" data-filter="' + esc(name) + '">' + esc(name) + '</button>';
+    }).join("");
+
+    var list = state.activities.filter(function (a) {
+      if (state.filter === "全部") return true;
+      var club = state.clubs.filter(function (c) { return c.id === a.club_id; })[0];
+      return club && club.name === state.filter;
+    });
+
+    return shell(
+      '<div class="page-head"><div class="grow"><h2>活动</h2>' +
+        '<p>按社团筛选，点「报名」占位；名额由数据库约束兜底。</p></div></div>' +
+      statsHTML() +
+      '<div class="filters">' + chips + '</div>' +
+      '<div class="list">' + (list.length ? list.map(activityCard).join("") : '<div class="empty">这个社团还没有活动。</div>') + '</div>'
+    );
+  }
+
+  function mineView() {
+    var mine = state.activities.filter(function (a) { return state.mine.indexOf(a.id) > -1; });
+    return shell(
+      '<div class="page-head"><div class="grow"><h2>我的报名</h2><p>已报名的活动，可以在这里取消。</p></div></div>' +
+      '<div class="list">' + (mine.length ? mine.map(activityCard).join("") : '<div class="empty">还没有报名任何活动。</div>') + '</div>'
+    );
+  }
+
+  function manageView() {
+    var clubOptions = state.clubs.map(function (c) {
+      return '<option value="' + c.id + '">' + esc(c.name) + '</option>';
+    }).join("");
+
+    var rows = state.activities.map(function (a) {
+      var club = state.clubs.filter(function (c) { return c.id === a.club_id; })[0] || { name: "-" };
+      return '<tr><td>' + esc(a.title) + '</td><td>' + esc(club.name) + '</td>' +
+        '<td>' + fmt(a.starts_at) + '</td>' +
+        '<td>' + (a.registered || 0) + " / " + a.capacity + '</td>' +
+        '<td>' + (a.status === "open" ? "报名中" : "已关闭") + '</td>' +
+        '<td><button class="btn ghost small" data-toggle="' + a.id + '">' +
+          (a.status === "open" ? "关闭" : "开放") + '</button></td></tr>';
+    }).join("");
+
+    return shell(
+      '<div class="page-head"><div class="grow"><h2>管理</h2><p>负责人可以发布活动、开关报名。</p></div></div>' +
+      '<section class="panel"><h3>发布新活动</h3>' +
+        '<form id="createForm">' +
+          '<div class="grid2">' +
+            '<label class="field"><span>活动名称</span><input name="title" required placeholder="例如：校园夜景外拍" /></label>' +
+            '<label class="field"><span>所属社团</span><select name="club_id" required style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit">' + clubOptions + '</select></label>' +
+            '<label class="field"><span>开始时间</span><input name="starts_at" type="datetime-local" required /></label>' +
+            '<label class="field"><span>人数上限</span><input name="capacity" type="number" min="1" max="500" value="30" required /></label>' +
+            '<label class="field"><span>地点</span><input name="location" placeholder="例如：图书馆北门" /></label>' +
+            '<label class="field"><span>一句话说明</span><input name="description" placeholder="活动内容、需要准备什么" /></label>' +
+          '</div>' +
+          '<button class="btn" type="submit" style="margin-top:14px">发布</button>' +
+        '</form>' +
+      '</section>' +
+      '<section class="panel"><h3>全部活动</h3>' +
+        '<table><thead><tr><th>活动</th><th>社团</th><th>时间</th><th>报名</th><th>状态</th><th></th></tr></thead>' +
+        '<tbody>' + (rows || '<tr><td colspan="6">还没有活动。</td></tr>') + '</tbody></table>' +
+      '</section>'
+    );
+  }
+
+  function render() {
+    if (!state.user) { app.innerHTML = loginView(); return; }
+    if (state.view === "mine") app.innerHTML = mineView();
+    else if (state.view === "manage" && state.user.role === "organizer") app.innerHTML = manageView();
+    else app.innerHTML = listView();
+  }
+
+  function refresh() {
+    return store.load().then(render).catch(function (e) { toast(e.message); render(); });
+  }
+
+  /* ---------------- 事件 ---------------- */
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target.closest("[data-auth],[data-view],[data-act],[data-filter],[data-reg],[data-cancel],[data-toggle],[data-demo]") : null;
+    if (!t) return;
+
+    if (t.hasAttribute("data-demo")) {
+      store.signIn("club@demo.cn", "123456").then(function () {
+        state.view = "list";
+        return refresh();
+      }).catch(function (err) { toast(err.message); });
+      return;
+    }
+    if (t.hasAttribute("data-auth")) {
+      state.authMode = t.getAttribute("data-auth");
+      render();
+      return;
+    }
+    if (t.hasAttribute("data-view")) {
+      state.view = t.getAttribute("data-view");
+      render();
+      if (state.view === "manage") refresh();
+      return;
+    }
+    if (t.getAttribute("data-act") === "logout") {
+      store.signOut().then(function () { state.view = "list"; render(); });
+      return;
+    }
+    if (t.hasAttribute("data-filter")) {
+      state.filter = t.getAttribute("data-filter");
+      render();
+      return;
+    }
+    if (t.hasAttribute("data-reg")) {
+      var id = t.getAttribute("data-reg");
+      store.register(id).then(function () {
+        toast("报名成功");
+        state.view = "mine";
+        return refresh();
+      }).catch(function (e) { toast(e.message); });
+      return;
+    }
+    if (t.hasAttribute("data-cancel")) {
+      store.cancel(t.getAttribute("data-cancel")).then(function () {
+        toast("已取消报名");
+        return refresh();
+      }).catch(function (e) { toast(e.message); });
+      return;
+    }
+    if (t.hasAttribute("data-toggle")) {
+      var aid = t.getAttribute("data-toggle");
+      var act = state.activities.filter(function (a) { return a.id === aid; })[0];
+      store.setStatus(aid, act.status === "open" ? "closed" : "open").then(function () {
+        toast("状态已更新");
+        return refresh();
+      }).catch(function (e) { toast(e.message); });
+    }
+  });
+
+  document.addEventListener("submit", function (e) {
+    if (e.target.id === "authForm") {
+      e.preventDefault();
+      var f = e.target;
+      var el = f.elements;
+      var email = el.email.value.trim(), password = el.password.value;
+      var name = el.name ? el.name.value.trim() : "";
+      var run = state.authMode === "signup"
+        ? store.signUp(email, password, name).then(function () { toast("注册成功，请用邮箱登录"); state.authMode = "signin"; render(); })
+        : store.signIn(email, password).then(function () { state.view = "list"; return refresh(); });
+      run.catch(function (err) { toast(err.message); });
+    }
+
+    if (e.target.id === "createForm") {
+      e.preventDefault();
+      var form = e.target;
+      var f = form.elements;
+      var payload = {
+        title: f.title.value.trim(),
+        club_id: f.club_id.value,
+        starts_at: new Date(f.starts_at.value).toISOString(),
+        capacity: parseInt(f.capacity.value, 10),
+        location: f.location.value.trim(),
+        description: f.description.value.trim()
+      };
+      if (!payload.title) { toast("活动名称不能为空"); return; }
+      store.createActivity(payload).then(function () {
+        toast("已发布");
+        form.reset();
+        return refresh();
+      }).catch(function (err) { toast(err.message); });
+    }
+  });
+
+  /* ---------------- 启动 ---------------- */
+  function boot() {
+    if (DEMO) {
+      // 作品集里用 ?as=organizer / ?as=student 直接进演示，省掉登录这一步
+      var m = location.search.match(/[?&]as=(student|organizer)/);
+      if (m) {
+        state.user = m[1] === "organizer"
+          ? { id: "u2", name: "陈默", role: "organizer" }
+          : { id: "u1", name: "林一", role: "student" };
+        state.view = "list";
+        refresh();
+        return;
+      }
+      render();
+      return;
+    }
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch (e) {}
+    if (saved && saved.token) {
+      state.token = saved.token;
+      state.user = saved.user;
+      refresh();
+    } else {
+      render();
+    }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

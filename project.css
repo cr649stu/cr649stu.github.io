@@ -1,0 +1,142 @@
+/* =============================================================
+   「毕业之前」项目页：一屏内的原型窗口
+   沿用全站的白 / 浅灰 / 深蓝三色，无阴影、无渐变。
+   ============================================================= */
+
+.project-page {
+  max-width: 1080px;
+  padding-top: clamp(20px, 3vh, 32px);
+  padding-bottom: clamp(24px, 4vh, 44px);
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--gray-text);
+  transition: color var(--ease);
+}
+.back-link:hover { color: var(--blue); }
+
+/* 标题 + 说明：左右两栏，省纵向空间 */
+.proj-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px 56px;
+  align-items: end;
+  margin: 16px 0 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--gray-line);
+}
+
+.project-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: var(--gray-faint);
+}
+
+.project-title {
+  margin: 8px 0 12px;
+  font-size: clamp(28px, 3.6vw, 38px);
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--blue);
+  line-height: 1.2;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.project-tags li {
+  padding: 4px 12px;
+  border: 1px solid var(--gray-line);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--gray-text);
+}
+
+.project-lead {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--gray-body);
+}
+
+/* 原型工具条 */
+.proto-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.proto-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.proto-tab {
+  padding: 6px 16px;
+  border: 1px solid var(--gray-line);
+  border-radius: 999px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--gray-text);
+  cursor: pointer;
+  transition: color var(--ease), border-color var(--ease), background-color var(--ease);
+}
+.proto-tab:hover { color: var(--blue); border-color: var(--blue); }
+.proto-tab.is-on {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.proto-open {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--blue);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--ease);
+}
+.proto-open:hover { border-bottom-color: var(--gray-faint); }
+
+/* 原型窗口 */
+.proto-frame {
+  border: 1px solid var(--gray-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f3f2ee;
+  height: clamp(400px, calc(100vh - 400px), 780px);
+}
+
+.proto-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* 内容比较满的演示（游戏类）给高一点 */
+.proto-frame.tall { height: clamp(520px, calc(100vh - 360px), 880px); }
+
+.proto-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--gray-faint);
+}
+
+@media (max-width: 820px) {
+  .proj-head { grid-template-columns: 1fr; gap: 16px; }
+  .proto-frame { height: clamp(420px, 66vh, 640px); }
+  .proto-open { margin-left: 0; }
+}

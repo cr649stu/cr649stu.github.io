@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>计时器 · 王开怀</title>
+<meta name="description" content="一个单文件的静态计时器：开始、暂停、重置，HTML + CSS + 原生 JS，无依赖。" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231b3a8b'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="project.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="bar">
+    <a class="brand" href="index.html">王开怀</a>
+    <nav class="menu" aria-label="主导航">
+      <a href="index.html">返回首页</a>
+      <a href="works.html" class="is-active is-featured">个人作品</a>
+      <a href="education.html">教育背景</a>
+      <a href="skills.html">专业技能</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page project-page">
+  <a class="back-link" href="works.html">← 返回作品列表</a>
+
+  <header class="proj-head">
+    <div class="proj-head-main">
+      <p class="project-kicker">纯前端小工具 · 2026</p>
+      <h1 class="project-title">计时器</h1>
+      <ul class="project-tags">
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>原生 JS</li>
+        <li>单文件</li>
+      </ul>
+    </div>
+    <p class="project-lead">
+      只有三个按钮：开始、暂停、重置。计时用时间戳相减，而不是每秒钟累加，
+      所以切到别的标签页再回来，秒数依旧准；界面只用圆角、细边和一层柔和阴影。
+    </p>
+  </header>
+
+  <div class="proto-bar">
+    <a class="proto-open" href="demo-timer.html" target="_blank" rel="noopener" style="margin-left:0">新窗口打开 ↗</a>
+  </div>
+
+  <div class="proto-frame">
+    <iframe id="timerFrame" src="demo-timer.html" title="计时器" loading="lazy"></iframe>
+  </div>
+
+  <p class="proto-note">
+    一个 HTML 文件、一段 CSS、一段原生 JS，没有任何依赖，也没有构建步骤。
+  </p>
+</main>
+
+</body>
+</html>

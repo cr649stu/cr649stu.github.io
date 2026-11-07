@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>毕业之前 · 可点原型</title>
+<style>
+:root{
+  --paper:#f3f2ee; --surface:#faf9f6; --ink:#111110; --soft:#35342f;
+  --muted:#7c7870; --line:#dbd7cd;
+  --serif:"Times New Roman","Songti SC","SimSun",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:15px/1.9 "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;filter:grayscale(100%) contrast(1.03)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input{font:inherit}
+::selection{background:var(--ink);color:var(--paper)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* 导航 */
+.nav{position:sticky;top:0;z-index:20;background:rgba(243,242,238,.96);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1080px;margin:0 auto;padding:13px 28px;display:flex;align-items:center;gap:24px}
+.logo{font-family:var(--serif);font-size:19px;letter-spacing:.08em;line-height:1.15}
+.logo span{display:block;font-family:"Segoe UI",sans-serif;font-size:8px;letter-spacing:.26em;color:var(--muted)}
+.nav-links{display:flex;gap:22px;margin-left:auto;font-size:14px}
+.nav-links a{color:var(--soft);padding-bottom:2px;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.nav-links a:hover,.nav-links a.on{color:var(--ink);border-color:var(--ink)}
+.bag{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:5px 13px;transition:border-color .2s}
+.bag:hover{border-color:var(--ink)}
+.bag b{font-weight:600}
+.proto-tag{font-size:9px;letter-spacing:.18em;color:var(--muted);border:1px solid var(--line);padding:2px 6px;border-radius:3px}
+
+/* 首屏 */
+.hero{position:relative;height:min(48vh,410px);min-height:300px;overflow:hidden}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.62))}
+.hero-in{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:40px;color:#fff}
+.eyebrow{margin:0 0 12px;font-size:10px;letter-spacing:.24em;opacity:.85}
+.hero h1{margin:0;font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.2vw,50px);line-height:1.28;letter-spacing:.02em}
+.hero .lead{margin:12px 0 0;font-size:14px;opacity:.88}
+.actions{display:flex;gap:10px;margin-top:22px}
+.btn{padding:9px 20px;border:1px solid currentColor;border-radius:999px;font-size:13px;letter-spacing:.05em;transition:background .2s,color .2s}
+.btn.solid{background:#fff;color:#111;border-color:#fff}
+.btn.solid:hover{background:transparent;color:#fff}
+.btn.ghost{color:#fff}
+.btn.ghost:hover{background:#fff;color:#111}
+
+/* 三栏 */
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:0 0 8px}
+.section-card{padding:34px 28px;border-top:2px solid var(--ink);border-right:1px solid var(--line)}
+.section-card:last-child{border-right:0}
+.section-card span{font-size:10px;letter-spacing:.22em;color:var(--muted)}
+.section-card h3{margin:10px 0 8px;font-family:var(--serif);font-size:24px;font-weight:400}
+.section-card p{margin:0;color:var(--soft);font-size:14px;line-height:1.85}
+.section-card a{display:inline-block;margin-top:14px;font-size:13px;border-bottom:1px solid var(--ink)}
+
+/* 通用区块标题 */
+.head{display:flex;align-items:baseline;gap:14px;margin:44px 0 18px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.head h2{margin:0;font-family:var(--serif);font-weight:400;font-size:28px}
+.head span{font-size:11px;letter-spacing:.2em;color:var(--muted)}
+.head .count{margin-left:auto;font-size:12px;color:var(--muted)}
+
+/* 记录列表 */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+.chip{font-size:12px;padding:5px 13px;border:1px solid var(--line);border-radius:999px;color:var(--soft);transition:.2s}
+.chip:hover{border-color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.search{margin-left:auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;width:210px;outline:none}
+.search:focus{border-color:var(--ink)}
+
+.post{display:grid;grid-template-columns:150px 1fr;gap:22px;padding:20px 0;border-bottom:1px solid var(--line)}
+.post:hover h3{text-decoration:underline;text-underline-offset:4px}
+.post img{width:150px;height:100px;object-fit:cover}
+.post h3{margin:0;font-family:var(--serif);font-weight:400;font-size:21px;line-height:1.5}
+.post p{margin:6px 0 0;font-size:13px;color:var(--muted);line-height:1.8}
+.meta{margin-top:10px;display:flex;gap:14px;font-size:11px;letter-spacing:.1em;color:var(--muted)}
+
+/* 文章详情 */
+.article{padding-top:34px;max-width:720px;margin:0 auto}
+.article .cover{width:100%;height:300px;object-fit:cover;margin-bottom:26px}
+.article h1{margin:0 0 10px;font-family:var(--serif);font-weight:400;font-size:clamp(26px,3.4vw,38px);line-height:1.4}
+.article .body p{margin:0 0 18px;font-size:15px;line-height:2;color:var(--soft)}
+.article .body p:first-child::first-letter{font-family:var(--serif);font-size:2.6em;line-height:.9;float:left;margin:6px 8px 0 0}
+.article-actions{display:flex;gap:12px;align-items:center;margin:26px 0 40px;padding-top:18px;border-top:1px solid var(--line)}
+.like{border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:13px;transition:.2s}
+.like.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* 问答 */
+.qa{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}
+.votes{text-align:center;border:1px solid var(--line);border-radius:8px;padding:6px 0;height:fit-content}
+.votes b{display:block;font-size:16px;font-weight:600;line-height:1.4}
+.votes span{font-size:10px;color:var(--muted)}
+.qa h3{margin:0;font-size:16px;font-weight:500;line-height:1.6}
+.qa .tags{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.qa .tags i{font-style:normal;border:1px solid var(--line);border-radius:4px;padding:1px 7px}
+.qa .tags em{font-style:normal;color:var(--muted)}
+.solved{color:#111;border-color:var(--ink)!important}
+
+/* 商品 */
+.goods{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding-bottom:20px}
+.good{border:1px solid var(--line);padding:12px;background:var(--surface);transition:border-color .2s}
+.good:hover{border-color:var(--ink)}
+.good img{width:100%;height:150px;object-fit:cover}
+.good h3{margin:10px 0 2px;font-size:14px;font-weight:500}
+.good .price{font-family:var(--serif);font-size:17px}
+.good button{margin-top:10px;width:100%;border:1px solid var(--ink);border-radius:999px;padding:6px 0;font-size:12px;transition:.2s}
+.good button:hover{background:var(--ink);color:var(--paper)}
+
+/* 购物袋 */
+.drawer{position:fixed;inset:0 0 0 auto;width:min(360px,88vw);background:var(--surface);border-left:1px solid var(--line);
+  padding:20px;z-index:40;display:flex;flex-direction:column;gap:14px;box-shadow:-20px 0 40px rgba(0,0,0,.08)}
+.drawer[hidden]{display:none}
+.drawer header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px}
+.drawer h2{margin:0;font-family:var(--serif);font-size:20px;font-weight:400}
+.bag-item{display:flex;gap:12px;align-items:center;font-size:13px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.bag-item img{width:46px;height:46px;object-fit:cover}
+.bag-item .grow{flex:1}
+.bag-total{margin-top:auto;display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px;font-family:var(--serif);font-size:18px}
+
+.foot{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 34px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.note{font-size:12px;color:var(--muted);margin:0 0 20px}
+
+@media (max-width:760px){
+  .three{grid-template-columns:1fr}
+  .section-card{border-right:0;border-bottom:1px solid var(--line)}
+  .post{grid-template-columns:1fr}
+  .post img{width:100%;height:160px}
+  .goods{grid-template-columns:repeat(2,1fr)}
+  .hero{height:320px}
+  .search{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="logo" href="#/">毕业之前<span>BEFORE GRADUATION</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#/blog" data-nav="blog">记录</a>
+      <a href="#/qa" data-nav="qa">互助</a>
+      <a href="#/shop" data-nav="shop">纪念</a>
+    </nav>
+    <button class="bag" id="bagBtn">购物袋 <b id="bagCount">0</b></button>
+    <span class="proto-tag">原型</span>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer class="foot wrap">
+  <span>毕业之前 · 课程实践作品 · 页面数据为演示内容</span>
+  <span>React 19 + Express + SQLite</span>
+</footer>
+
+<aside class="drawer" id="drawer" hidden>
+  <header>
+    <h2>购物袋</h2>
+    <button id="closeDrawer" aria-label="关闭">✕</button>
+  </header>
+  <div id="bagList"></div>
+  <div class="bag-total"><span>合计</span><span id="bagTotal">¥0</span></div>
+</aside>
+
+<script>
+(function () {
+  "use strict";
+
+  var posts = [
+    { id: "p1", cat: "论文", date: "2026-05-12", read: "6 分钟", cover: "assets/demo/campus.jpg",
+      title: "论文写到第三章，才发现开题报告要重写",
+      excerpt: "导师说选题太大，我盯着屏幕上那三万字，决定从第一章开始删。",
+      body: [
+        "开题的时候我把题目写得很大，好像题目越大，论文就越像论文。写到第三章才明白，范围每扩一寸，能说清楚的东西就少一分。",
+        "那天下午我在图书馆把提纲重新排了一遍，删掉两章，把“现状分析”压成半页，剩下的篇幅留给真正做过的事情。",
+        "重写不是退步。至少这一次，我知道每一节要回答什么问题。"
+      ] },
+    { id: "p2", cat: "校园", date: "2026-04-28", read: "4 分钟", cover: "assets/demo/library.jpg",
+      title: "在图书馆六楼，找到了没人抢的座位",
+      excerpt: "靠窗第三排，上午有光，插座在左手边，唯一的缺点是旁边有人打呼。",
+      body: [
+        "六楼是旧书区，人少，空调也不太灵。我在这里占了半个月的座，桌上放一杯凉掉的茶和一摞借了没看的书。",
+        "有时候一上午只写了两段，但那种安静很值钱。"
+      ] },
+    { id: "p3", cat: "实习", date: "2026-04-16", read: "7 分钟", cover: "assets/demo/night.jpg",
+      title: "第一次实习面试，被问了三个不会的问题",
+      excerpt: "面试官很客气，我也很客气，我们客气地聊了四十分钟。",
+      body: [
+        "第一个问题问的是索引，我背过，但没在真实的数据表上用过，答得很虚。第二个问题问项目里最难的地方，我说了半小时前的自己。",
+        "回来之后我把那三个问题抄在纸上，一个个补。补完才发现，面试问的其实都是我做项目时绕过去的地方。"
+      ] },
+    { id: "p4", cat: "生活", date: "2026-04-02", read: "3 分钟", cover: "assets/demo/friends.jpg",
+      title: "宿舍四个人，最后一起去吃了顿火锅",
+      excerpt: "谁也没提毕业，只聊了聊谁先找到工作、谁的行李最多。",
+      body: [
+        "四年里我们吵过架，也一起熬过夜。临走那天，宿舍空得能听见回声，四个人还是去楼下那家火锅店坐了三个小时。",
+        "散场的时候谁都没说再见，只说“到了发消息”。"
+      ] },
+    { id: "p5", cat: "旅行", date: "2026-03-20", read: "5 分钟", cover: "assets/demo/travel.jpg",
+      title: "毕业旅行想去敦煌，有人一起吗",
+      excerpt: "预算三千，五天四晚，火车去飞机回，路线我已经排好了。",
+      body: [
+        "想去看看莫高窟的壁画，也想去鸣沙山看一次日落。行程表排到第三天的时候，我意识到自己其实只是想离开学校一阵子。",
+        "如果有人一起，欢迎在互助区留言。"
+      ] }
+  ];
+
+  var questions = [
+    { id: "q1", title: "毕业论文的查重率多少算安全？", tags: ["论文"], votes: 24, answers: 12, solved: true,
+      body: ["学校要求 15% 以下，但不同系统结果差得挺多。想问问大家一般压到多少比较稳。"] },
+    { id: "q2", title: "实习 offer：大厂边缘岗还是小公司核心岗？", tags: ["实习"], votes: 18, answers: 8, solved: false,
+      body: ["一个是大厂的运营支持，一个是二十人小公司的全栈开发。钱差不多，纠结的是简历和成长。"] },
+    { id: "q3", title: "租房合同里的“押一付三”怎么谈？", tags: ["租房"], votes: 11, answers: 5, solved: false,
+      body: ["第一次租房，房东坚持押一付三，中介说可以谈。想听听有经验的人怎么说。"] },
+    { id: "q4", title: "毕业照去哪里拍比较好？", tags: ["生活"], votes: 9, answers: 6, solved: true,
+      body: ["不想拍那种排队二十分钟、三分钟走人的影楼照，学校附近有没有安静一点的地方。"] }
+  ];
+
+  var products = [
+    { id: "g1", name: "胶片相机", price: 368, img: "assets/demo/camera.jpg" },
+    { id: "g2", name: "毕业纪念册", price: 128, img: "assets/demo/album.jpg" },
+    { id: "g3", name: "帆布托特包", price: 69, img: "assets/demo/tote.jpg" },
+    { id: "g4", name: "明信片套装", price: 39, img: "assets/demo/postcards.jpg" }
+  ];
+
+  var state = { cat: "全部", q: "", sort: "new", liked: {}, bag: {} };
+  var app = document.getElementById("app");
+  var bagCount = document.getElementById("bagCount");
+  var drawer = document.getElementById("drawer");
+
+  function money(n) { return "¥" + n; }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function find(list, id) { for (var i = 0; i < list.length; i++) { if (list[i].id === id) return list[i]; } return null; }
+
+  function route() {
+    var hash = location.hash.replace(/^#/, "") || "/";
+    var parts = hash.split("/").filter(Boolean);
+    var page = parts[0] || "home";
+    var id = parts[1];
+
+    if (page === "blog") return id ? articleHTML(find(posts, id)) : blogHTML();
+    if (page === "qa") return id ? questionHTML(find(questions, id)) : qaHTML();
+    if (page === "shop") return shopHTML();
+    return homeHTML();
+  }
+
+  function homeHTML() {
+    return '' +
+      '<section class="hero">' +
+        '<img src="assets/demo/hero.jpg" alt="毕业典礼上抛起的学士帽" />' +
+        '<div class="wrap hero-in">' +
+          '<p class="eyebrow">VOL.04 / 2026 毕业季特辑</p>' +
+          '<h1>把毕业之前的日子，<br />留在能翻到的地方。</h1>' +
+          '<p class="lead">记录、提问、带走一件纪念品。</p>' +
+          '<div class="actions">' +
+            '<a class="btn solid" href="#/blog">开始记录</a>' +
+            '<a class="btn ghost" href="#/shop">逛逛纪念品</a>' +
+          '</div>' +
+        '</div>' +
+      '</section>' +
+      '<div class="wrap"><section class="three">' +
+        '<article class="section-card"><span>01 / RECORD</span><h3>记录</h3>' +
+          '<p>论文、实习、宿舍、毕业旅行。把还没想明白的事先写下来，过一阵再看，已经不一样了。</p>' +
+          '<a href="#/blog">进入记录 →</a></article>' +
+        '<article class="section-card"><span>02 / ASK</span><h3>互助</h3>' +
+          '<p>论文、实习、租房、毕业旅行——把困惑留在这里，总有人答得上来。</p>' +
+          '<a href="#/qa">进入互助 →</a></article>' +
+        '<article class="section-card"><span>03 / KEEP</span><h3>纪念</h3>' +
+          '<p>相机、纪念册、明信片。把四年装进一件可以带走的东西里。</p>' +
+          '<a href="#/shop">进入纪念 →</a></article>' +
+      '</section></div>';
+  }
+
+  function blogHTML() {
+    var cats = ["全部", "论文", "实习", "校园", "生活", "旅行"];
+    var chips = cats.map(function (c) {
+      return '<button class="chip' + (state.cat === c ? " on" : "") + '" data-cat="' + c + '">' + c + "</button>";
+    }).join("");
+
+    var list = posts.filter(function (p) {
+      var okCat = state.cat === "全部" || p.cat === state.cat;
+      var okQ = !state.q || (p.title + p.excerpt).indexOf(state.q) > -1;
+      return okCat && okQ;
+    });
+
+    var rows = list.map(function (p) {
+      return '<a class="post" href="#/blog/' + p.id + '">' +
+        '<img src="' + p.cover + '" alt="" />' +
+        '<div><h3>' + p.title + '</h3><p>' + p.excerpt + '</p>' +
+        '<div class="meta"><span>' + p.cat + '</span><span>' + p.date + '</span><span>' + p.read + '</span></div></div>' +
+      '</a>';
+    }).join("") || '<p class="note">没有找到相关内容。</p>';
+
+    return '<div class="wrap">' +
+      '<div class="head"><h2>记录</h2><span>RECORD</span><span class="count">' + list.length + " 篇</span></div>" +
+      '<div class="tools">' + chips +
+        '<input class="search" id="search" placeholder="搜索标题或摘要…" value="' + esc(state.q) + '" />' +
+      '</div>' +
+      '<div id="list">' + rows + "</div></div>";
+  }
+
+  function articleHTML(p) {
+    if (!p) return '<div class="wrap"><p class="note">文章不存在。</p></div>';
+    var liked = !!state.liked[p.id];
+    return '<div class="wrap"><article class="article">' +
+      '<a class="note" href="#/blog">← 回到记录</a>' +
+      '<img class="cover" src="' + p.cover + '" alt="" />' +
+      '<div class="meta"><span>' + p.cat + '</span><span>' + p.date + '</span><span>' + p.read + '</span></div>' +
+      '<h1>' + p.title + '</h1>' +
+      '<div class="body">' + p.body.map(function (t) { return "<p>" + t + "</p>"; }).join("") + '</div>' +
+      '<div class="article-actions">' +
+        '<button class="like' + (liked ? " on" : "") + '" data-like="' + p.id + '">' +
+          (liked ? "已赞" : "点赞") + " · " + (liked ? 1 : 0) + '</button>' +
+        '<span class="note" style="margin:0">作者：林一</span>' +
+      '</div></article></div>';
+  }
+
+  function qaHTML() {
+    var sorted = questions.slice();
+    if (state.sort === "hot") sorted.sort(function (a, b) { return b.votes - a.votes; });
+    if (state.sort === "open") sorted = sorted.filter(function (q) { return !q.solved; });
+
+    var tabs = [["new", "最新"], ["hot", "热门"], ["open", "未解决"]].map(function (t) {
+      return '<button class="chip' + (state.sort === t[0] ? " on" : "") + '" data-sort="' + t[0] + '">' + t[1] + "</button>";
+    }).join("");
+
+    var rows = sorted.map(function (q) {
+      return '<a class="qa" href="#/qa/' + q.id + '">' +
+        '<div class="votes"><b>' + q.votes + '</b><span>赞同</span></div>' +
+        '<div><h3>' + q.title + '</h3>' +
+        '<div class="tags"><i class="' + (q.solved ? "solved" : "") + '">' + (q.solved ? "已解决" : "待解决") + '</i>' +
+        q.tags.map(function (t) { return "<i>" + t + "</i>"; }).join("") +
+        '<em>' + q.answers + ' 个回答</em></div></div></a>';
+    }).join("") || '<p class="note">暂时没有未解决的问题。</p>';
+
+    return '<div class="wrap">' +
+      '<div class="head"><h2>互助</h2><span>ASK</span><span class="count">' + sorted.length + " 个问题</span></div>" +
+      '<div class="tools">' + tabs + '</div>' + rows + "</div>";
+  }
+
+  function questionHTML(q) {
+    if (!q) return '<div class="wrap"><p class="note">问题不存在。</p></div>';
+    return '<div class="wrap"><article class="article">' +
+      '<a class="note" href="#/qa">← 回到互助</a>' +
+      '<div class="meta"><span>' + q.tags.join(" / ") + '</span><span>' + (q.solved ? "已解决" : "待解决") + '</span></div>' +
+      '<h1>' + q.title + '</h1>' +
+      '<div class="body">' + q.body.map(function (t) { return "<p>" + t + "</p>"; }).join("") + '</div>' +
+      '<div class="head" style="margin:36px 0 6px"><h2 style="font-size:20px">回答 · ' + q.answers + '</h2></div>' +
+      '<div class="body"><p>先看学校发的文件，不同系统结果确实会差，留 3% 余量比较稳妥。</p></div>' +
+      '<div class="body"><p>同问，我这边查出来 9%，学院说按知网的结果算。</p></div>' +
+      '</article></div>';
+  }
+
+  function shopHTML() {
+    var items = products.map(function (g) {
+      return '<article class="good">' +
+        '<img src="' + g.img + '" alt="' + g.name + '" />' +
+        '<h3>' + g.name + '</h3>' +
+        '<div class="price">' + money(g.price) + '</div>' +
+        '<button data-add="' + g.id + '">加入购物袋</button>' +
+      '</article>';
+    }).join("");
+
+    return '<div class="wrap">' +
+      '<div class="head"><h2>纪念</h2><span>KEEP</span><span class="count">' + products.length + " 件</span></div>" +
+      '<p class="note">课程练习，不涉及真实交易；下单与支付均为模拟。</p>' +
+      '<div class="goods">' + items + "</div></div>";
+  }
+
+  function renderBag() {
+    var ids = Object.keys(state.bag);
+    var n = 0, total = 0, rows = "";
+    ids.forEach(function (id) {
+      var g = find(products, id), qty = state.bag[id];
+      n += qty; total += g.price * qty;
+      rows += '<div class="bag-item"><img src="' + g.img + '" alt="" />' +
+        '<div class="grow">' + g.name + '<br /><span class="note">× ' + qty + '</span></div>' +
+        '<div>' + money(g.price * qty) + '</div>' +
+        '<button data-del="' + id + '" aria-label="移除">✕</button></div>';
+    });
+    bagCount.textContent = n;
+    document.getElementById("bagList").innerHTML = rows || '<p class="note">购物袋是空的。</p>';
+    document.getElementById("bagTotal").textContent = money(total);
+  }
+
+  function render() {
+    app.innerHTML = route();
+    renderBag();
+    var path = location.hash.replace(/^#\/?/, "").split("/")[0] || "home";
+    Array.prototype.forEach.call(document.querySelectorAll("[data-nav]"), function (a) {
+      a.classList.toggle("on", a.getAttribute("data-nav") === path);
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target.closest("[data-cat],[data-sort],[data-like],[data-add],[data-del]") : null;
+    if (!t) return;
+
+    if (t.hasAttribute("data-cat")) {
+      state.cat = t.getAttribute("data-cat");
+      render(); return;
+    }
+    if (t.hasAttribute("data-sort")) {
+      state.sort = t.getAttribute("data-sort");
+      render(); return;
+    }
+    if (t.hasAttribute("data-like")) {
+      var id = t.getAttribute("data-like");
+      state.liked[id] = !state.liked[id];
+      render(); return;
+    }
+    if (t.hasAttribute("data-add")) {
+      var pid = t.getAttribute("data-add");
+      state.bag[pid] = (state.bag[pid] || 0) + 1;
+      renderBag();
+      return;
+    }
+    if (t.hasAttribute("data-del")) {
+      delete state.bag[t.getAttribute("data-del")];
+      renderBag();
+    }
+  });
+
+  document.addEventListener("input", function (e) {
+    if (e.target.id !== "search") return;
+    state.q = e.target.value;
+    var box = document.getElementById("list");
+    if (!box) return;
+    var list = posts.filter(function (p) {
+      var okCat = state.cat === "全部" || p.cat === state.cat;
+      var okQ = !state.q || (p.title + p.excerpt).indexOf(state.q) > -1;
+      return okCat && okQ;
+    });
+    box.innerHTML = list.map(function (p) {
+      return '<a class="post" href="#/blog/' + p.id + '">' +
+        '<img src="' + p.cover + '" alt="" />' +
+        '<div><h3>' + p.title + '</h3><p>' + p.excerpt + '</p>' +
+        '<div class="meta"><span>' + p.cat + '</span><span>' + p.date + '</span><span>' + p.read + '</span></div></div></a>';
+    }).join("") || '<p class="note">没有找到相关内容。</p>';
+  });
+
+  document.getElementById("bagBtn").addEventListener("click", function () { drawer.hidden = false; });
+  document.getElementById("closeDrawer").addEventListener("click", function () { drawer.hidden = true; });
+
+  window.addEventListener("hashchange", function () {
+    render();
+    window.scrollTo(0, 0);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

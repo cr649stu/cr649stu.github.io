@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>传奇抽卡 · Football Pack</title>
+<style>
+  :root{
+    --bg:#070b14;
+    --panel:#111a2e;
+    --line:rgba(255,255,255,.08);
+    --ink:#e9eefb;
+    --muted:#8794ad;
+    --gold:#f5b301;
+    --blue:#3b82f6;
+    --purple:#a855f7;
+    --gray:#8b93a7;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;min-height:100vh;color:var(--ink);
+    font:14px/1.6 "PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    background:
+      radial-gradient(900px 500px at 50% -10%, #16233f 0%, transparent 60%),
+      radial-gradient(700px 400px at 90% 110%, #1a1530 0%, transparent 60%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+  .app{max-width:1080px;margin:0 auto;padding:18px 18px 40px}
+
+  .top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo i{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#f5b301,#b47b00);color:#1a1200;font-style:normal;font-weight:800}
+  .logo b{display:block;font-size:16px;letter-spacing:.04em}
+  .logo span{display:block;font-size:9px;letter-spacing:.3em;color:var(--muted)}
+  .tickets{margin-left:auto;display:flex;align-items:center;gap:8px;
+    padding:7px 14px;border-radius:999px;border:1px solid rgba(245,179,1,.35);
+    background:rgba(245,179,1,.12);color:var(--gold);font-size:13px;font-weight:600}
+  .tickets em{font-style:normal;font-size:17px;font-variant-numeric:tabular-nums}
+
+  .tabs{display:flex;gap:4px;padding:4px;border-radius:12px;background:rgba(255,255,255,.04);
+    border:1px solid var(--line);margin-bottom:18px}
+  .tabs button{flex:1;padding:9px 8px;border-radius:9px;font-size:13px;color:var(--muted);transition:.2s}
+  .tabs button.on{background:rgba(255,255,255,.09);color:#fff;font-weight:600}
+
+  .view{display:none}
+  .view.on{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .draw-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+  .pack{position:relative;border-radius:20px;overflow:hidden;
+    background:linear-gradient(150deg,#1b2742,#0f1626 60%);
+    border:1px solid rgba(245,179,1,.22);min-height:320px;display:grid;place-items:center;padding:26px}
+  .pack::before{content:"";position:absolute;inset:-40%;
+    background:conic-gradient(from 0deg, transparent, rgba(245,179,1,.18), transparent 40%);
+    animation:spin 8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .pack-in{position:relative;text-align:center}
+  .pack-art{width:118px;height:158px;margin:0 auto 16px;border-radius:14px;
+    background:linear-gradient(160deg,#26365c,#101827);border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 20px 50px -20px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.2);
+    display:grid;place-items:center;position:relative;overflow:hidden}
+  .pack-art::after{content:"PACK";font-size:11px;letter-spacing:.3em;color:rgba(255,255,255,.4)}
+  .pack-art::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.22) 45%,transparent 60%);
+    transform:translateX(-120%);animation:shine 3.2s ease-in-out infinite}
+  @keyframes shine{0%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+  .pack h2{font-size:18px;margin:0 0 4px}
+  .pack p{margin:0;font-size:12px;color:var(--muted)}
+  .draw-btns{display:flex;gap:10px;margin-top:18px}
+  .btn{padding:11px 20px;border-radius:12px;border:1px solid var(--line);
+    background:rgba(255,255,255,.05);font-size:14px;transition:.2s}
+  .btn:hover{background:rgba(255,255,255,.1)}
+  .btn.gold{background:linear-gradient(140deg,#f5b301,#c98a00);color:#1a1200;border-color:transparent;font-weight:700}
+  .btn.gold:hover{filter:brightness(1.06)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+
+  .side{display:grid;gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .panel h3{margin:0 0 10px;font-size:14px;letter-spacing:.04em}
+  .panel p{margin:0;font-size:12.5px;color:var(--muted)}
+  .rate{display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;
+    border-bottom:1px dashed rgba(255,255,255,.06)}
+  .rate:last-child{border:0}
+  .r-legend{color:var(--gold)} .r-epic{color:var(--purple)} .r-featured{color:var(--blue)} .r-common{color:var(--gray)}
+
+  /* ============ 卡牌 ============ */
+  .card{position:relative;aspect-ratio:3/4.2;border-radius:12px;overflow:hidden;
+    background:linear-gradient(160deg,#16203a,#0a0f1a);
+    border:1px solid rgba(255,255,255,.12);isolation:isolate}
+  .card::before{content:"";position:absolute;inset:0;z-index:0;opacity:.5}
+  .card.legend::before{background:radial-gradient(90% 60% at 50% 0%,rgba(245,179,1,.5),transparent 70%)}
+  .card::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(118deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.02) 28%,
+      rgba(0,0,0,0) 52%, rgba(0,0,0,.22) 100%)}
+  .card.epic::before{background:radial-gradient(90% 60% at 50% 0%,rgba(168,85,247,.45),transparent 70%)}
+  .card.featured::before{background:radial-gradient(90% 60% at 50% 0%,rgba(59,130,246,.4),transparent 70%)}
+  .card.common::before{background:radial-gradient(90% 60% at 50% 0%,rgba(139,147,167,.28),transparent 70%)}
+  .card.legend{border-color:rgba(245,179,1,.6);box-shadow:0 0 30px -8px rgba(245,179,1,.55)}
+  .card.epic{border-color:rgba(168,85,247,.5);box-shadow:0 0 24px -10px rgba(168,85,247,.5)}
+  .card.featured{border-color:rgba(59,130,246,.45)}
+
+
+  .c-art{position:absolute;inset:0;z-index:1}
+  .c-art svg{width:100%;height:100%;display:block}
+
+  .c-top{position:absolute;top:7px;left:8px;right:8px;z-index:3;
+    display:flex;align-items:flex-start;justify-content:space-between}
+  .c-ovr{font-size:24px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;
+    text-shadow:0 2px 10px rgba(0,0,0,.8)}
+  .c-pos{font-size:9.5px;letter-spacing:.16em;color:rgba(255,255,255,.75);margin-top:2px}
+  .c-badge{font-size:9px;letter-spacing:.14em;padding:2px 6px;border-radius:5px;
+    border:1px solid currentColor;background:rgba(5,8,14,.55)}
+  .card.legend .c-badge{color:var(--gold)} .card.epic .c-badge{color:var(--purple)}
+  .card.featured .c-badge{color:var(--blue)} .card.common .c-badge{color:var(--gray)}
+
+  .c-bottom{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:18px 8px 8px;
+    background:linear-gradient(transparent,rgba(4,7,13,.92) 45%);text-align:center}
+  .c-name{font-size:12.5px;font-weight:700;line-height:1.25;letter-spacing:.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .c-nat{font-size:9.5px;color:var(--muted);letter-spacing:.08em;margin-top:2px}
+
+  .dup-tag{position:absolute;bottom:30px;left:6px;font-size:9px;padding:1px 6px;border-radius:5px;
+    background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.25);color:#ffd76a;z-index:4}
+
+  .card.small .c-ovr{font-size:17px}
+  .card.small .c-name{font-size:10px}
+  .card.small .c-nat{font-size:8px}
+  .card.small .c-badge{font-size:8px;padding:1px 4px}
+  .card.small .c-bottom{padding:14px 5px 5px}
+
+
+  /* 阵容 */
+  .squad-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  .squad-head select{padding:9px 12px;border-radius:10px;background:var(--panel);
+    border:1px solid var(--line);color:var(--ink);font:inherit}
+  .pitch{position:relative;aspect-ratio:16/10;border-radius:16px;border:1px solid rgba(255,255,255,.1);
+    background:linear-gradient(180deg, rgba(20,60,40,.55), rgba(12,40,28,.75)),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 2px, transparent 2px 60px);
+    overflow:hidden}
+  .pitch::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.12)}
+  .slot{position:absolute;transform:translate(-50%,-50%);width:76px;text-align:center;
+    border-radius:10px;padding:5px 4px;background:rgba(8,14,26,.86);
+    border:1px solid rgba(255,255,255,.16);font-size:10px;line-height:1.3;transition:.2s}
+  .slot:hover{border-color:var(--gold);transform:translate(-50%,-50%) scale(1.04)}
+  .slot.empty{color:var(--muted);border-style:dashed}
+  .slot b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .slot span{color:var(--gold);font-size:10px}
+  .slot .pos{display:block;font-size:9px;letter-spacing:.12em;color:var(--muted)}
+
+  /* 图鉴 */
+  .dex-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .chip{padding:6px 13px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .chip.on{border-color:var(--gold);color:var(--gold);background:rgba(245,179,1,.08)}
+  .dex-count{margin-left:auto;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+
+  /* 任务 */
+  .task{display:grid;gap:12px}
+  .quiz-q{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+  .quiz-q h4{margin:0 0 8px;font-size:13.5px;font-weight:600;line-height:1.6}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opt{padding:9px 12px;border-radius:9px;border:1px solid var(--line);text-align:left;
+    font-size:13px;background:rgba(255,255,255,.03);transition:.2s}
+  .opt:hover{border-color:var(--gold)}
+  .opt.right{border-color:#22c55e;background:rgba(34,197,94,.12)}
+  .opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.1)}
+  .opt:disabled{cursor:default}
+  .progress{height:4px;border-radius:999px;background:rgba(255,255,255,.08);margin:10px 0 0;overflow:hidden}
+  .progress i{display:block;height:100%;background:var(--gold);transition:width .3s}
+
+  /* 动画层 */
+  .overlay{position:fixed;inset:0;z-index:50;display:none;background:rgba(3,6,12,.93);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);overflow:auto;padding:34px 16px}
+  .overlay.open{display:grid;place-items:center}
+  .flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60}
+  .flash.go{animation:flash .5s ease}
+  @keyframes flash{0%{opacity:.85}100%{opacity:0}}
+
+  .stage{width:100%;max-width:920px;text-align:center;position:relative}
+  .stage.legendary::before{content:"";position:absolute;left:50%;top:44%;width:130vmin;height:130vmin;
+    z-index:-1;transform:translate(-50%,-50%);pointer-events:none;
+    background:conic-gradient(from 0deg, transparent 0deg 9deg, rgba(245,179,1,.13) 9deg 15deg, transparent 15deg 24deg);
+    animation:spin 30s linear infinite}
+  .stage-title{font-size:12px;letter-spacing:.4em;color:var(--muted);margin-bottom:18px}
+  .reveal-single{display:grid;place-items:center;perspective:1200px}
+  .reveal-single .card{width:min(62vw,250px);transform:rotateY(180deg);opacity:0;
+    animation:flipIn .6s .35s forwards cubic-bezier(.2,.8,.2,1)}
+  @keyframes flipIn{0%{transform:rotateY(180deg) scale(.9);opacity:0}
+    100%{transform:rotateY(0) scale(1);opacity:1}}
+  .reveal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .reveal-grid > div{opacity:0;transform:translateY(14px) scale(.92);
+    animation:pop .45s forwards cubic-bezier(.2,.8,.2,1)}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .stage-actions{margin-top:22px;display:flex;gap:10px;justify-content:center}
+
+  .picker{position:fixed;inset:0;z-index:55;display:none;background:rgba(3,6,12,.88);
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:40px 16px;overflow:auto}
+  .picker.open{display:block}
+  .picker-in{max-width:780px;margin:0 auto;background:var(--panel);border:1px solid var(--line);
+    border-radius:18px;padding:20px}
+  .picker h3{margin:0 0 4px;font-size:16px}
+  .picker p{margin:0 0 14px;font-size:12px;color:var(--muted)}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:70;
+    background:#101827;border:1px solid rgba(245,179,1,.4);color:#ffe3a3;
+    padding:9px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:820px){
+    .draw-wrap{grid-template-columns:1fr}
+    .reveal-grid{grid-template-columns:repeat(2,1fr)}
+    .opts{grid-template-columns:1fr}
+    .slot{width:64px}
+    .pitch{aspect-ratio:4/5}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo"><i>P</i><div><b>传奇抽卡</b><span>FOOTBALL PACK</span></div></div>
+    <div class="tickets">抽卡券 <em id="ticketCount">0</em></div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="draw" class="on">抽卡</button>
+    <button data-tab="squad">阵容</button>
+    <button data-tab="dex">图鉴</button>
+    <button data-tab="task">任务</button>
+  </nav>
+
+  <section class="view on" id="view-draw">
+    <div class="draw-wrap">
+      <div class="pack">
+        <div class="pack-in">
+          <div class="pack-art"></div>
+          <h2>开启球员包</h2>
+          <p>每日赠送 12 张，答对一题再得 2 张</p>
+          <div class="draw-btns">
+            <button class="btn gold" id="drawOne">抽一次（1 券）</button>
+            <button class="btn" id="drawTen">十连（10 券）</button>
+          </div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="panel">
+          <h3>掉率</h3>
+          <div class="rate"><span class="r-legend">传奇（退役）</span><b>2%</b></div>
+          <div class="rate"><span class="r-epic">史诗（退役）</span><b>10%</b></div>
+          <div class="rate"><span class="r-featured">精选（现役）</span><b>20%</b></div>
+          <div class="rate"><span class="r-common">普通（现役）</span><b>68%</b></div>
+          <div class="rate" style="color:#ffd76a"><span>★ C 罗（最强）</span><b>精选池 8%</b></div>
+        </div>
+        <div class="panel">
+          <h3>最近抽到</h3>
+          <div class="grid" id="recent" style="grid-template-columns:repeat(3,1fr)"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-squad">
+    <div class="squad-head">
+      <select id="formation"></select>
+      <button class="btn" id="autoFill">自动排阵</button>
+      <button class="btn" id="clearSquad">清空</button>
+      <span class="dex-count" id="squadAvg"></span>
+    </div>
+    <div class="pitch" id="pitch"></div>
+    <p class="dex-count" style="margin-top:10px">点位置格子选人，阵容保存在本机</p>
+  </section>
+
+  <section class="view" id="view-dex">
+    <div class="dex-head" id="dexChips"></div>
+    <div class="grid" id="dexGrid"></div>
+  </section>
+
+  <section class="view" id="view-task">
+    <div class="panel">
+      <h3>每日签到</h3>
+      <p id="dailyText"></p>
+      <button class="btn gold" id="claimDaily" style="margin-top:12px">领取今日抽卡券</button>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h3>每日答题 · 每天 10 题，答对一题得 2 张</h3>
+      <p id="quizText"></p>
+      <div class="progress"><i id="quizBar" style="width:0%"></i></div>
+      <div id="quizBox"></div>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="overlay"><div class="stage" id="stage"></div></div>
+<div class="picker" id="picker"><div class="picker-in" id="pickerIn"></div></div>
+<div class="flash" id="flash"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= 球员数据 ================= */
+  var RETIRED = [
+    "Lev Yashin|SU|GK|96","Gordon Banks|EN|GK|93","Dino Zoff|IT|GK|94","Peter Schmeichel|DK|GK|93",
+    "Gianluigi Buffon|IT|GK|95","Iker Casillas|ES|GK|94","Oliver Kahn|DE|GK|94","Jose Luis Chilavert|PY|GK|89",
+    "Edwin van der Sar|NL|GK|91","Petr Cech|CZ|GK|92","Sepp Maier|DE|GK|92","Dida|BR|GK|89",
+    "Claudio Taffarel|BR|GK|88","Fabien Barthez|FR|GK|88","Jorge Campos|MX|GK|87",
+    "Franz Beckenbauer|DE|DF|97","Paolo Maldini|IT|DF|96","Franco Baresi|IT|DF|95","Fabio Cannavaro|IT|DF|93",
+    "Alessandro Nesta|IT|DF|93","Gaetano Scirea|IT|DF|92","Giacinto Facchetti|IT|DF|92","Cafu|BR|DF|93",
+    "Roberto Carlos|BR|DF|94","Aldair|BR|DF|89","Lucio|BR|DF|89","Nilton Santos|BR|DF|90","Djalma Santos|BR|DF|90",
+    "Bobby Moore|EN|DF|94","Rio Ferdinand|EN|DF|91","John Terry|EN|DF|91","Ashley Cole|EN|DF|90",
+    "Sol Campbell|EN|DF|88","Carles Puyol|ES|DF|92","Gerard Pique|ES|DF|89","Sergio Ramos|ES|DF|93",
+    "Fernando Hierro|ES|DF|90","Philipp Lahm|DE|DF|93","Jurgen Kohler|DE|DF|89","Andreas Brehme|DE|DF|89",
+    "Laurent Blanc|FR|DF|89","Lilian Thuram|FR|DF|92","Marcel Desailly|FR|DF|90","Bixente Lizarazu|FR|DF|88",
+    "Javier Zanetti|AR|DF|91","Roberto Ayala|AR|DF|89","Jaap Stam|NL|DF|90","Frank de Boer|NL|DF|88",
+    "Ronald Koeman|NL|DF|90","Marcelo|BR|DF|90","Dani Alves|BR|DF|90",
+    "Zinedine Zidane|FR|MF|97","Michel Platini|FR|MF|95","Diego Maradona|AR|MF|98","Johan Cruyff|NL|MF|96",
+    "Andrea Pirlo|IT|MF|93","Gennaro Gattuso|IT|MF|88","Roberto Baggio|IT|MF|93","Kaka|BR|MF|93",
+    "Ronaldinho|BR|MF|94","Rivaldo|BR|MF|92","Zico|BR|MF|93","Socrates|BR|MF|89","Falcao|BR|MF|88",
+    "Rivelino|BR|MF|89","Juninho Pernambucano|BR|MF|88","Ze Roberto|BR|MF|86","Juan Roman Riquelme|AR|MF|91",
+    "Pablo Aimar|AR|MF|88","Juan Sebastian Veron|AR|MF|89","Xavi|ES|MF|94","Andres Iniesta|ES|MF|94",
+    "Cesc Fabregas|ES|MF|89","Xabi Alonso|ES|MF|90","David Silva|ES|MF|89","Steven Gerrard|EN|MF|92",
+    "Frank Lampard|EN|MF|91","Paul Scholes|EN|MF|91","David Beckham|EN|MF|91","Roy Keane|IE|MF|90",
+    "Patrick Vieira|FR|MF|90","Michael Ballack|DE|MF|90","Bastian Schweinsteiger|DE|MF|89","Mesut Ozil|DE|MF|89",
+    "Lothar Matthaus|DE|MF|94","Luis Figo|PT|MF|93","Rui Costa|PT|MF|88","Deco|PT|MF|87",
+    "Pavel Nedved|CZ|MF|91","Gheorghe Hagi|RO|MF|90","Hristo Stoichkov|BG|MF|89","Enzo Francescoli|UY|MF|88",
+    "Jay-Jay Okocha|NG|MF|87","Abedi Pele|GH|MF|87","Bobby Charlton|EN|MF|92","Josef Masopust|CZ|MF|88",
+    "Juan Schiaffino|UY|MF|89",
+    "Pele|BR|FW|98","Ronaldo|BR|FW|96","Romario|BR|FW|93","Eusebio|PT|FW|94","Gerd Muller|DE|FW|94",
+    "Miroslav Klose|DE|FW|89","Jurgen Klinsmann|DE|FW|88","Karl-Heinz Rummenigge|DE|FW|90","Marco van Basten|NL|FW|95",
+    "Ruud Gullit|NL|FW|92","Dennis Bergkamp|NL|FW|91","Patrick Kluivert|NL|FW|88","Ruud van Nistelrooy|NL|FW|91",
+    "Arjen Robben|NL|FW|91","Robin van Persie|NL|FW|90","Thierry Henry|FR|FW|94","David Trezeguet|FR|FW|89",
+    "Eric Cantona|FR|FW|90","Jean-Pierre Papin|FR|FW|88","Zlatan Ibrahimovic|SE|FW|92","Henrik Larsson|SE|FW|88",
+    "Raul|ES|FW|92","David Villa|ES|FW|90","Fernando Torres|ES|FW|89","Samuel Etoo|CM|FW|92",
+    "Didier Drogba|CI|FW|91","George Weah|LR|FW|90","Nwankwo Kanu|NG|FW|86","Ali Daei|IR|FW|86",
+    "Gabriel Batistuta|AR|FW|92","Hernan Crespo|AR|FW|89","Carlos Tevez|AR|FW|89","Sergio Aguero|AR|FW|90",
+    "Diego Milito|AR|FW|87","Bebeto|BR|FW|88","Careca|BR|FW|88","Hugo Sanchez|MX|FW|90",
+    "Cuauhtemoc Blanco|MX|FW|85","Ivan Zamorano|CL|FW|87","Marcelo Salas|CL|FW|87","Francesco Totti|IT|FW|93",
+    "Alessandro Del Piero|IT|FW|91","Luca Toni|IT|FW|86","Filippo Inzaghi|IT|FW|87","Christian Vieri|IT|FW|87",
+    "Paolo Rossi|IT|FW|88","Gianfranco Zola|IT|FW|87","Denis Law|SCO|FW|90","Kenny Dalglish|SCO|FW|90",
+    "Ferenc Puskas|HU|FW|95","Omar Sivori|AR|FW|88","Alfredo Di Stefano|AR|FW|96","Gary Lineker|EN|FW|88",
+    "Alan Shearer|EN|FW|89","Kevin Keegan|EN|FW|88"
+  ];
+
+  var ACTIVE = [
+    "Alisson|BR|GK|89","Ederson|BR|GK|87","Thibaut Courtois|BE|GK|90","Marc-Andre ter Stegen|DE|GK|88",
+    "Manuel Neuer|DE|GK|89","Gianluigi Donnarumma|IT|GK|88","David de Gea|ES|GK|85","Jan Oblak|SI|GK|88",
+    "Emiliano Martinez|AR|GK|87","Mike Maignan|FR|GK|86","Yassine Bounou|MA|GK|84","Diogo Costa|PT|GK|84",
+    "Unai Simon|ES|GK|83","Gregor Kobel|CH|GK|84",
+    "Virgil van Dijk|NL|DF|90","Ruben Dias|PT|DF|89","Antonio Rudiger|DE|DF|87","David Alaba|AT|DF|86",
+    "Alphonso Davies|CA|DF|86","Achraf Hakimi|MA|DF|86","Trent Alexander-Arnold|EN|DF|87","Andrew Robertson|SCO|DF|85",
+    "Theo Hernandez|FR|DF|85","Jules Kounde|FR|DF|86","William Saliba|FR|DF|86","Josko Gvardiol|HR|DF|85",
+    "Alessandro Bastoni|IT|DF|85","Ronald Araujo|UY|DF|85","Eder Militao|BR|DF|84","Marquinhos|BR|DF|85",
+    "Kyle Walker|EN|DF|83","John Stones|EN|DF|84","Lisandro Martinez|AR|DF|84","Cristian Romero|AR|DF|85",
+    "Kim Min-jae|KR|DF|84","Milan Skriniar|SK|DF|83","Kalidou Koulibaly|SN|DF|83","Ibrahima Konate|FR|DF|84",
+    "Dayot Upamecano|FR|DF|83","Pau Cubarsi|ES|DF|82","Nuno Mendes|PT|DF|84","Federico Dimarco|IT|DF|83",
+    "Denzel Dumfries|NL|DF|82","Jeremie Frimpong|NL|DF|81","Milos Kerkez|HU|DF|80","Riccardo Calafiori|IT|DF|81",
+    "Marcos Acuna|AR|DF|81","Nahuel Molina|AR|DF|82","Jonathan Tah|DE|DF|83","Nico Schlotterbeck|DE|DF|82",
+    "Rodri|ES|MF|91","Kevin De Bruyne|BE|MF|90","Luka Modric|HR|MF|89","Jude Bellingham|EN|MF|90",
+    "Pedri|ES|MF|87","Gavi|ES|MF|84","Frenkie de Jong|NL|MF|86","Joshua Kimmich|DE|MF|87",
+    "Ilkay Gundogan|DE|MF|85","Bernardo Silva|PT|MF|87","Bruno Fernandes|PT|MF|87","Bruno Guimaraes|BR|MF|85",
+    "Casemiro|BR|MF|84","Fabinho|BR|MF|83","Enzo Fernandez|AR|MF|84","Alexis Mac Allister|AR|MF|85",
+    "Rodrigo De Paul|AR|MF|84","Nicolo Barella|IT|MF|86","Sandro Tonali|IT|MF|84","Federico Valverde|UY|MF|87",
+    "Eduardo Camavinga|FR|MF|84","Aurelien Tchouameni|FR|MF|85","Warren Zaire-Emery|FR|MF|83","Martin Zubimendi|ES|MF|84",
+    "Dani Olmo|ES|MF|85","Florian Wirtz|DE|MF|88","Jamal Musiala|DE|MF|87","Phil Foden|EN|MF|87",
+    "Declan Rice|EN|MF|86","Cole Palmer|EN|MF|86","Son Heung-min|KR|MF|86","Takefusa Kubo|JP|MF|83",
+    "Kaoru Mitoma|JP|MF|82","Lee Kang-in|KR|MF|81","Hakan Calhanoglu|TR|MF|84","Piotr Zielinski|PL|MF|82",
+    "Dominik Szoboszlai|HU|MF|83","Manuel Ugarte|UY|MF|82","Douglas Luiz|BR|MF|82","Joao Neves|PT|MF|83",
+    "Vitinha|PT|MF|84","Ryan Gravenberch|NL|MF|83","Tijjani Reijnders|NL|MF|83","Weston McKennie|US|MF|81",
+    "Xavi Simons|NL|MF|83",
+    "Cristiano Ronaldo|PT|FW|99","Kylian Mbappe|FR|FW|92","Erling Haaland|NO|FW|91","Vinicius Junior|BR|FW|90",
+    "Rodrygo|BR|FW|86","Neymar|BR|FW|89","Lionel Messi|AR|FW|96","Robert Lewandowski|PL|FW|89",
+    "Karim Benzema|FR|FW|88","Mohamed Salah|EG|FW|89","Sadio Mane|SN|FW|86","Victor Osimhen|NG|FW|87",
+    "Khvicha Kvaratskhelia|GE|FW|86","Lautaro Martinez|AR|FW|87","Julian Alvarez|AR|FW|86","Harry Kane|EN|FW|89",
+    "Marcus Rashford|EN|FW|84","Rafael Leao|PT|FW|85","Antoine Griezmann|FR|FW|87","Ousmane Dembele|FR|FW|86",
+    "Raphinha|BR|FW|86","Endrick|BR|FW|80","Lamine Yamal|ES|FW|88","Nico Williams|ES|FW|84",
+    "Alvaro Morata|ES|FW|83","Alexander Isak|SE|FW|86","Viktor Gyokeres|SE|FW|86","Dusan Vlahovic|RS|FW|84",
+    "Romelu Lukaku|BE|FW|84","Memphis Depay|NL|FW|83","Cody Gakpo|NL|FW|83","Darwin Nunez|UY|FW|82",
+    "Federico Chiesa|IT|FW|83","Ademola Lookman|NG|FW|83","Jonathan David|CA|FW|83","Christian Pulisic|US|FW|83",
+    "Hirving Lozano|MX|FW|81","Santiago Gimenez|MX|FW|82","Richarlison|BR|FW|81","Gabriel Jesus|BR|FW|81",
+    "Gabriel Martinelli|BR|FW|82","Anthony Gordon|EN|FW|82","Ollie Watkins|EN|FW|83","Bukayo Saka|EN|FW|87",
+    "Serhou Guirassy|GN|FW|82","Mateo Retegui|IT|FW|82","Kenan Yildiz|TR|FW|80","Michael Olise|FR|FW|84",
+    "Alejandro Garnacho|AR|FW|81","Benjamin Sesko|SI|FW|82","Rasmus Hojlund|DK|FW|81","Antonio Nusa|NO|FW|80",
+    "Bradley Barcola|FR|FW|82","Nicolas Gonzalez|AR|FW|81"
+  ];
+
+  var FLAG = {
+    BR:"🇧🇷", AR:"🇦🇷", FR:"🇫🇷", DE:"🇩🇪", IT:"🇮🇹", ES:"🇪🇸", EN:"🏴", NL:"🇳🇱", PT:"🇵🇹",
+    BE:"🇧🇪", HR:"🇭🇷", UY:"🇺🇾", MX:"🇲🇽", CL:"🇨🇱", SE:"🇸🇪", NO:"🇳🇴", DK:"🇩🇰",
+    PL:"🇵🇱", CZ:"🇨🇿", SK:"🇸🇰", SI:"🇸🇮", HU:"🇭🇺", RO:"🇷🇴", BG:"🇧🇬", RS:"🇷🇸",
+    TR:"🇹🇷", GR:"🇬🇷", MA:"🇲🇦", EG:"🇪🇬", SN:"🇸🇳", CI:"🇨🇮", CM:"🇨🇲", NG:"🇳🇬",
+    GH:"🇬🇭", GN:"🇬🇳", LR:"🇱🇷", GE:"🇬🇪", JP:"🇯🇵", KR:"🇰🇷", IR:"🇮🇷", US:"🇺🇸",
+    CA:"🇨🇦", AT:"🇦🇹", CH:"🇨🇭", IE:"🇮🇪", SCO:"🏴", SU:"🇷🇺", PY:"🇵🇾"
+  };
+
+  // 球衣配色：主色 / 副色
+  var KIT = {
+    BR:["#ffd400","#009c3b"], AR:["#7ec8f0","#ffffff"], FR:["#1a3a8f","#ffffff"], DE:["#ffffff","#111111"],
+    IT:["#1a4fa0","#ffffff"], ES:["#c60b1e","#ffc400"], EN:["#ffffff","#1a2a6c"], NL:["#f36c21","#ffffff"],
+    PT:["#c8102e","#046a38"], BE:["#c8102e","#111111"], HR:["#c8102e","#ffffff"], UY:["#5aa9e6","#ffffff"],
+    MX:["#006847","#ffffff"], CL:["#c8102e","#ffffff"], SE:["#ffcd00","#005293"], NO:["#ba0c2f","#ffffff"],
+    DK:["#c60c30","#ffffff"], PL:["#ffffff","#c8102e"], CZ:["#c8102e","#ffffff"], SK:["#0b4ea2","#ffffff"],
+    SI:["#ffffff","#005da4"], HU:["#c8102e","#ffffff"], RO:["#fcd116","#002b7f"], BG:["#ffffff","#00966e"],
+    RS:["#c6363c","#ffffff"], TR:["#e30a17","#ffffff"], GR:["#0d5eaf","#ffffff"], MA:["#c1272d","#006233"],
+    EG:["#c8102e","#ffffff"], SN:["#00853f","#fdef42"], CI:["#f77f00","#ffffff"], CM:["#007a5e","#ce1126"],
+    NG:["#008751","#ffffff"], GH:["#fcd116","#006b3f"], GN:["#ce1126","#fcd116"], LR:["#002b7f","#ffffff"],
+    GE:["#ffffff","#ff0000"], JP:["#0d1b4c","#ffffff"], KR:["#cd2e3a","#0047a0"], IR:["#ffffff","#239f40"],
+    US:["#ffffff","#0a3161"], CA:["#c8102e","#ffffff"], AT:["#c8102e","#ffffff"], CH:["#c8102e","#ffffff"],
+    IE:["#169b62","#ffffff"], SCO:["#0d1b4c","#ffffff"], SU:["#c8102e","#ffffff"], PY:["#c8102e","#ffffff"]
+  };
+
+  var RARITY = {
+    legend:  { name:"传奇", cls:"legend",  rank:4 },
+    epic:    { name:"史诗", cls:"epic",    rank:3 },
+    featured:{ name:"精选", cls:"featured",rank:2 },
+    common:  { name:"普通", cls:"common",  rank:1 }
+  };
+
+  var STAR_NAME = "Cristiano Ronaldo";
+
+  function parse(list, retired) {
+    return list.map(function (line, i) {
+      var p = line.split("|");
+      return {
+        id: (retired ? "r" : "a") + i, name: p[0], nat: p[1], pos: p[2],
+        ovr: +p[3], retired: retired, star: p[0] === STAR_NAME
+      };
+    });
+  }
+
+  var PLAYERS = parse(RETIRED, true).concat(parse(ACTIVE, false));
+  var BY_ID = {};
+  PLAYERS.forEach(function (p) { BY_ID[p.id] = p; });
+
+  var CARDS = [];
+  PLAYERS.forEach(function (p) {
+    if (p.retired) {
+      if (p.ovr >= 93) {
+        CARDS.push({ id: p.id + "-legend", pid: p.id, rarity: "legend" });
+        if (p.ovr >= 96) CARDS.push({ id: p.id + "-epic", pid: p.id, rarity: "epic" });
+      } else {
+        CARDS.push({ id: p.id + "-epic", pid: p.id, rarity: "epic" });
+      }
+    } else {
+      if (p.star) {
+        // C 罗只保留「精选」这一张最强卡，不进普通池
+        CARDS.push({ id: p.id + "-featured", pid: p.id, rarity: "featured" });
+        return;
+      }
+      CARDS.push({ id: p.id + "-common", pid: p.id, rarity: "common" });
+      if (p.ovr >= 86) CARDS.push({ id: p.id + "-featured", pid: p.id, rarity: "featured" });
+    }
+  });
+
+  var POOL = { legend: [], epic: [], featured: [], common: [] };
+  CARDS.forEach(function (c) { POOL[c.rarity].push(c); });
+  var STAR_CARD = CARDS.filter(function (c) { return BY_ID[c.pid].star && c.rarity === "featured"; })[0];
+
+  /* ================= 人物立绘（SVG） ================= */
+  function kit(p) { return KIT[p.nat] || ["#2a3a5c", "#9fb0cc"]; }
+
+  function hash(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 9973;
+    return h;
+  }
+
+  function portrait(p, uid) {
+    var k = kit(p);
+    var main = k[0], alt = k[1];
+    var n = (hash(p.name) % 28) + 1;
+    var tilt = (hash(p.name) % 5) - 2;
+    var gid = "c" + uid;
+
+    return '<svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+        '<linearGradient id="' + gid + 'j" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="' + main + '"/>' +
+          '<stop offset=".55" stop-color="' + main + '" stop-opacity=".82"/>' +
+          '<stop offset="1" stop-color="' + main + '" stop-opacity=".34"/>' +
+        '</linearGradient>' +
+        '<linearGradient id="' + gid + 'h" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#3c4c69"/>' +
+          '<stop offset="1" stop-color="#151c2a"/>' +
+        '</linearGradient>' +
+        '<radialGradient id="' + gid + 's" cx="50%" cy="22%" r="64%">' +
+          '<stop offset="0" stop-color="' + alt + '" stop-opacity=".42"/>' +
+          '<stop offset=".55" stop-color="' + alt + '" stop-opacity=".10"/>' +
+          '<stop offset="1" stop-color="' + alt + '" stop-opacity="0"/>' +
+        '</radialGradient>' +
+        '<linearGradient id="' + gid + 'v" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" stop-color="#000" stop-opacity="0"/>' +
+          '<stop offset="1" stop-color="#000" stop-opacity=".5"/>' +
+        '</linearGradient>' +
+      '</defs>' +
+      '<rect width="100" height="140" fill="#0a0f1a"/>' +
+      '<rect width="100" height="140" fill="url(#' + gid + 's)"/>' +
+      '<g opacity=".09" fill="#ffffff">' +
+        '<polygon points="50,-8 24,140 38,140"/>' +
+        '<polygon points="50,-8 64,140 78,140"/>' +
+      '</g>' +
+      '<g transform="rotate(' + tilt + ' 50 92)">' +
+        '<path d="M6 140 C9 112 18 94 36 87 L50 97 L64 87 C82 94 91 112 94 140 Z" fill="url(#' + gid + 'j)"/>' +
+        '<path d="M6 140 C9 112 18 94 36 87 L33 96 C20 102 13 118 11 140 Z" fill="#000" opacity=".18"/>' +
+        '<path d="M94 140 C91 112 82 94 64 87 L67 96 C80 102 87 118 89 140 Z" fill="#000" opacity=".18"/>' +
+        '<path d="M36 87 L50 99 L64 87 L60 82 L50 92 L40 82 Z" fill="' + alt + '" opacity=".9"/>' +
+        '<path d="M36 87 L50 99 L64 87" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="1"/>' +
+        '<circle cx="67" cy="104" r="4.6" fill="' + alt + '" opacity=".85"/>' +
+        '<circle cx="67" cy="104" r="3" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width=".7"/>' +
+        '<text x="50" y="121" font-family="Arial Black,Arial" font-size="19" font-weight="900" ' +
+          'fill="#000" fill-opacity=".35" text-anchor="middle">' + n + '</text>' +
+        '<text x="50" y="120" font-family="Arial Black,Arial" font-size="19" font-weight="900" ' +
+          'fill="' + alt + '" fill-opacity=".92" text-anchor="middle">' + n + '</text>' +
+        '<path d="M24 100 C30 93 38 90 44 89" stroke="#fff" stroke-opacity=".07" stroke-width="1.4" fill="none"/>' +
+        '<path d="M76 100 C70 93 62 90 56 89" stroke="#fff" stroke-opacity=".07" stroke-width="1.4" fill="none"/>' +
+        '<rect x="42" y="66" width="16" height="21" rx="7" fill="#141a26"/>' +
+        '<ellipse cx="50" cy="45" rx="15.5" ry="17.5" fill="url(#' + gid + 'h)"/>' +
+        '<path d="M33 42 C34 26 42 20 50 20 C58 20 66 26 67 42 C64 34 58 29 50 29 C42 29 36 34 33 42 Z" fill="#0a0e17"/>' +
+        '<path d="M36 36 C40 28 46 25 50 25" stroke="#fff" stroke-opacity=".14" stroke-width="1.2" fill="none"/>' +
+        '<path d="M40 61 Q50 66 60 61" stroke="#000" stroke-opacity=".35" stroke-width="2" fill="none"/>' +
+        '<path d="M66 37 C70 47 68 56 62 62" stroke="#fff" stroke-opacity=".22" stroke-width="1.6" fill="none"/>' +
+        '<path d="M89 140 C86 112 78 96 64 88" stroke="#fff" stroke-opacity=".16" stroke-width="1.6" fill="none"/>' +
+      '</g>' +
+      '<rect width="100" height="140" fill="url(#' + gid + 'v)"/>' +
+      '<rect x=".5" y=".5" width="99" height="139" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>' +
+    '</svg>';
+  }
+
+  /* ================= 卡面 ================= */
+  var uidSeq = 0;
+  function cardHTML(card, small, dup) {
+    var p = BY_ID[card.pid];
+    var r = RARITY[card.rarity];
+    return '<div class="card ' + r.cls + (small ? " small" : "") + '">' +
+      '<div class="c-art">' + portrait(p, uidSeq++) + '</div>' +
+      (dup ? '<span class="dup-tag">重复</span>' : '') +
+      '<div class="c-top"><div><div class="c-ovr">' + p.ovr + '</div><div class="c-pos">' + p.pos + '</div></div>' +
+        '<span class="c-badge">' + r.name + '</span></div>' +
+      '<div class="c-bottom"><div class="c-name">' + p.name + '</div>' +
+        '<div class="c-nat">' + (FLAG[p.nat] || "") + ' ' + p.nat + '</div></div>' +
+    '</div>';
+  }
+
+  /* ================= 状态 ================= */
+  var KEY = "football-pack.v2";
+  var state = {
+    tickets: 6,
+    lastDaily: "",
+    quiz: { day: "", done: 0, correct: 0 },
+    owned: {},
+    squad: [],
+    formation: "4-3-3",
+    recent: []
+  };
+
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) state = Object.assign(state, JSON.parse(raw));
+    } catch (e) { /* ignore */ }
+    if (!state.squad || !state.squad.length) state.squad = [];
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  /* ================= 抽卡 ================= */
+  function rollRarity() {
+    var x = Math.random() * 100;
+    if (x < 2) return "legend";
+    if (x < 12) return "epic";
+    if (x < 32) return "featured";
+    return "common";
+  }
+  function rollCard() {
+    var r = rollRarity();
+    // 精选池里 C 罗占 8%，其余均匀
+    if (r === "featured" && STAR_CARD && Math.random() < 0.08) return STAR_CARD;
+    var pool = POOL[r];
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function draw(n) {
+    if (state.tickets < n) { toast("抽卡券不够，去任务页领取"); return; }
+    state.tickets -= n;
+    var got = [], dupCount = 0;
+    for (var i = 0; i < n; i++) {
+      var c = rollCard();
+      var dup = !!state.owned[c.id];
+      if (dup) { dupCount++; state.tickets += 1; }
+      state.owned[c.id] = (state.owned[c.id] || 0) + 1;
+      got.push({ card: c, dup: dup });
+    }
+    state.recent = got.slice(-3).reverse().map(function (g) { return g.card.id; });
+    save(); renderTickets();
+    showReveal(got);
+  }
+
+  function showReveal(got) {
+    var stage = document.getElementById("stage");
+    var flash = document.getElementById("flash");
+    var overlay = document.getElementById("overlay");
+
+    var best = got.reduce(function (a, g) {
+      return RARITY[g.card.rarity].rank > RARITY[a.rarity].rank ? g.card : a;
+    }, got[0].card);
+
+
+    var html = '';
+    if (got.length === 1) {
+      html = '<div class="stage-title">' + RARITY[best.rarity].name + '</div>' +
+        '<div class="reveal-single">' + cardHTML(got[0].card, false, got[0].dup) + '</div>';
+    } else {
+      html = '<div class="stage-title">十连结果</div><div class="reveal-grid">';
+      got.forEach(function (g, i) {
+        html += '<div style="animation-delay:' + (i * 90) + 'ms">' + cardHTML(g.card, true, g.dup) + '</div>';
+      });
+      html += '</div>';
+    }
+
+    var dups = got.filter(function (g) { return g.dup; }).length;
+    if (dups) {
+      html += '<p style="color:#8794ad;font-size:12px;margin:14px 0 0">有 ' + dups +
+        ' 张重复卡，已返还 ' + dups + ' 张抽卡券</p>';
+    }
+    html += '<div class="stage-actions">' +
+      '<button class="btn gold" id="againBtn">再抽一次</button>' +
+      '<button class="btn" id="closeBtn">收下</button></div>';
+
+    stage.className = "stage" + (best.rarity === "legend" ? " legendary" : "");
+    stage.innerHTML = html;
+    overlay.classList.add("open");
+
+    flash.classList.remove("go");
+    void flash.offsetWidth;
+    flash.classList.add("go");
+
+    document.getElementById("closeBtn").onclick = function () { overlay.classList.remove("open"); renderAll(); };
+    document.getElementById("againBtn").onclick = function () {
+      overlay.classList.remove("open");
+      draw(got.length === 1 ? 1 : 10);
+    };
+  }
+
+  /* ================= 阵容 ================= */
+  var FORMATIONS = {
+    "4-3-3": [["GK",50,88],["LB",15,68],["CB",37,72],["CB",63,72],["RB",85,68],
+      ["CM",28,45],["CM",50,52],["CM",72,45],["LW",18,20],["ST",50,16],["RW",82,20]],
+    "4-4-2": [["GK",50,88],["LB",15,68],["CB",37,72],["CB",63,72],["RB",85,68],
+      ["LM",15,43],["CM",38,47],["CM",62,47],["RM",85,43],["ST",38,16],["ST",62,16]],
+    "3-5-2": [["GK",50,88],["CB",28,72],["CB",50,75],["CB",72,72],
+      ["LWB",10,46],["CM",32,50],["CM",50,42],["CM",68,50],["RWB",90,46],["ST",38,16],["ST",62,16]],
+    "4-2-3-1": [["GK",50,88],["LB",15,68],["CB",37,72],["CB",63,72],["RB",85,68],
+      ["DM",35,52],["DM",65,52],["AM",20,32],["AM",50,34],["AM",80,32],["ST",50,12]]
+  };
+  function slotPos(label) {
+    if (label === "GK") return "GK";
+    if (/B$|WB/.test(label)) return "DF";
+    if (/M$/.test(label)) return "MF";
+    return "FW";
+  }
+
+  function renderSquad() {
+    var sel = document.getElementById("formation");
+    if (!sel.options.length) {
+      Object.keys(FORMATIONS).forEach(function (f) {
+        var o = document.createElement("option"); o.value = f; o.textContent = f; sel.appendChild(o);
+      });
+      sel.onchange = function () {
+        state.formation = sel.value;
+        state.squad = [];
+        save(); renderSquad();
+      };
+    }
+    sel.value = state.formation;
+
+    var pitch = document.getElementById("pitch");
+    var slots = FORMATIONS[state.formation];
+    var html = "", total = 0, count = 0;
+
+    slots.forEach(function (s, i) {
+      var cardId = state.squad[i];
+      var card = null;
+      if (cardId) card = BY_ID[cardId.substring(0, cardId.lastIndexOf("-"))];
+      if (card) { total += card.ovr; count++; }
+      html += '<button class="slot' + (card ? "" : " empty") + '" data-slot="' + i + '" ' +
+        'style="left:' + s[1] + '%;top:' + s[2] + '%">' +
+        '<span class="pos">' + s[0] + '</span>' +
+        (card ? '<b>' + card.name + '</b><span>' + card.ovr + '</span>' : '<b>选择</b>') +
+        '</button>';
+    });
+
+    pitch.innerHTML = html;
+    document.getElementById("squadAvg").textContent = count
+      ? "已选 " + count + " 人 · 平均 " + Math.round(total / count)
+      : "还没排人";
+
+    Array.prototype.forEach.call(pitch.querySelectorAll(".slot"), function (el) {
+      el.onclick = function () { openPicker(+el.getAttribute("data-slot")); };
+    });
+  }
+
+  function openPicker(index) {
+    var slots = FORMATIONS[state.formation];
+    var need = slotPos(slots[index][0]);
+    var options = CARDS.filter(function (c) {
+      return state.owned[c.id] && BY_ID[c.pid].pos === need;
+    }).sort(function (a, b) { return BY_ID[b.pid].ovr - BY_ID[a.pid].ovr; });
+
+    var picker = document.getElementById("picker");
+    var inner = document.getElementById("pickerIn");
+    inner.innerHTML = '<h3>选择 ' + need + ' 球员</h3>' +
+      '<p>点一张卡放进这个位置，只显示已拥有的球员</p>' +
+      '<div class="grid">' + (options.length ? options.map(function (c) {
+        return '<button data-pick="' + c.id + '" style="padding:0;text-align:left">' + cardHTML(c, true, false) + '</button>';
+      }).join("") : '<p>还没有 ' + need + ' 球员，先去抽卡。</p>') + '</div>';
+
+    picker.classList.add("open");
+    Array.prototype.forEach.call(inner.querySelectorAll("[data-pick]"), function (el) {
+      el.onclick = function () {
+        state.squad[index] = el.getAttribute("data-pick");
+        save(); picker.classList.remove("open"); renderSquad();
+      };
+    });
+    picker.onclick = function (e) { if (e.target === picker) picker.classList.remove("open"); };
+  }
+
+  function autoFill() {
+    var slots = FORMATIONS[state.formation];
+    var used = {};
+    state.squad = slots.map(function (s) {
+      var need = slotPos(s[0]);
+      var best = CARDS.filter(function (c) {
+        return state.owned[c.id] && !used[c.id] && BY_ID[c.pid].pos === need;
+      }).sort(function (a, b) { return BY_ID[b.pid].ovr - BY_ID[a.pid].ovr; })[0];
+      if (best) { used[best.id] = 1; return best.id; }
+      return null;
+    });
+    save(); renderSquad();
+    toast("已按评分自动排阵");
+  }
+
+  /* ================= 图鉴 ================= */
+  var dexFilter = "all";
+  function renderDex() {
+    var chips = [["all","全部"],["legend","传奇"],["epic","史诗"],["featured","精选"],["common","普通"]];
+    document.getElementById("dexChips").innerHTML = chips.map(function (c) {
+      var n = c[0] === "all"
+        ? Object.keys(state.owned).length
+        : CARDS.filter(function (x) { return x.rarity === c[0] && state.owned[x.id]; }).length;
+      return '<button class="chip' + (dexFilter === c[0] ? " on" : "") + '" data-dex="' + c[0] + '">' +
+        c[1] + ' ' + n + '</button>';
+    }).join("") +
+    '<span class="dex-count">已收集 ' + Object.keys(state.owned).length + ' / ' + CARDS.length + '</span>';
+
+    var list = CARDS.filter(function (c) {
+      return state.owned[c.id] && (dexFilter === "all" || c.rarity === dexFilter);
+    }).sort(function (a, b) {
+      return RARITY[b.rarity].rank - RARITY[a.rarity].rank || BY_ID[b.pid].ovr - BY_ID[a.pid].ovr;
+    });
+
+    document.getElementById("dexGrid").innerHTML = list.length
+      ? list.map(function (c) { return cardHTML(c, false, false); }).join("")
+      : '<p style="color:#8794ad">还没有抽到卡，去抽卡页试试。</p>';
+
+    Array.prototype.forEach.call(document.getElementById("dexChips").querySelectorAll("[data-dex]"), function (b) {
+      b.onclick = function () { dexFilter = b.getAttribute("data-dex"); renderDex(); };
+    });
+  }
+
+  /* ================= 任务 ================= */
+  var QUESTIONS = [
+    { q: "足球比赛每队在场上最多有多少名球员？", o: ["11", "10", "12", "9"], a: 0 },
+    { q: "世界杯每几年举办一次？", o: ["2 年", "4 年", "5 年", "3 年"], a: 1 },
+    { q: "常规比赛时间是多少分钟？", o: ["80", "90", "100", "120"], a: 1 },
+    { q: "点球点距离球门线多少米？", o: ["9 米", "10 米", "11 米", "12 米"], a: 2 },
+    { q: "越位是在什么时候判断的？", o: ["接球瞬间", "传球瞬间", "射门瞬间", "裁判任意判断"], a: 1 },
+    { q: "一名球员一场比赛打进三球叫什么？", o: ["大四喜", "帽子戏法", "梅开二度", "绝杀"], a: 1 },
+    { q: "守门员可以用手接球的范围是？", o: ["整个半场", "本方禁区", "本方半场", "球门区"], a: 1 },
+    { q: "红牌意味着什么？", o: ["警告", "罚下", "换人", "暂停"], a: 1 },
+    { q: "欧冠决赛通常在几月举行？", o: ["3 月", "4 月", "5 月底到 6 月初", "8 月"], a: 2 },
+    { q: "一支球队常规换人名额（现行规则）最多几人？", o: ["3 人", "4 人", "5 人", "不限"], a: 2 },
+    { q: "2022 年卡塔尔世界杯的冠军是？", o: ["法国", "阿根廷", "巴西", "德国"], a: 1 },
+    { q: "2018 年俄罗斯世界杯的冠军是？", o: ["克罗地亚", "德国", "法国", "西班牙"], a: 2 },
+    { q: "2014 年巴西世界杯的冠军是？", o: ["阿根廷", "德国", "荷兰", "巴西"], a: 1 },
+    { q: "欧冠夺冠次数最多的俱乐部是？", o: ["AC 米兰", "拜仁", "皇家马德里", "利物浦"], a: 2 },
+    { q: "获得金球奖次数最多的球员是？", o: ["C 罗", "梅西", "克鲁伊夫", "普拉蒂尼"], a: 1 },
+    { q: "场上人数少于几人时比赛终止？", o: ["7 人", "8 人", "9 人", "6 人"], a: 0 },
+    { q: "角球直接罚进球门，算不算进球？", o: ["算", "不算", "看裁判", "只算半场"], a: 0 },
+    { q: "点球大战每队先罚几个球？", o: ["3 个", "5 个", "7 个", "不限"], a: 1 },
+    { q: "判断越位时，以身体的什么部位为准？", o: ["手臂", "头、躯干或脚", "整个身体", "只看脚"], a: 1 },
+    { q: "标准足球的重量大约是多少？", o: ["300-350 克", "410-450 克", "500-550 克", "600 克"], a: 1 },
+    { q: "标准球场的长度范围大约是？", o: ["90-100 米", "100-110 米", "110-120 米", "80-90 米"], a: 1 },
+    { q: "中场休息通常多长时间？", o: ["10 分钟", "15 分钟", "20 分钟", "5 分钟"], a: 1 },
+    { q: "角球时存在越位吗？", o: ["存在", "不存在", "看情况", "只有半场"], a: 1 },
+    { q: "一名球员吃到两张黄牌会怎样？", o: ["继续比赛", "被罚下", "只是警告", "换人"], a: 1 },
+    { q: "第一届世界杯在哪一年举办？", o: ["1926 年", "1930 年", "1934 年", "1950 年"], a: 1 },
+    { q: "欧洲杯每几年举办一次？", o: ["2 年", "3 年", "4 年", "5 年"], a: 2 },
+    { q: "英超一个赛季每队要踢多少轮？", o: ["34 轮", "36 轮", "38 轮", "40 轮"], a: 2 },
+    { q: "现行规则下，门将持球时间上限是？", o: ["4 秒", "6 秒", "8 秒", "10 秒"], a: 1 },
+    { q: "比赛开始和进球后如何恢复比赛？", o: ["界外球", "中圈开球", "角球", "球门球"], a: 1 },
+    { q: "VAR 的全称是？", o: ["视频助理裁判", "视频回放", "边裁", "第四官员"], a: 0 }
+  ];
+  var QUIZ_PER_DAY = 10;
+
+  function dayIndex() {
+    var d = new Date();
+    var t = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    return Math.floor(t / 86400000);
+  }
+  function todayQuestions() {
+    var start = dayIndex() % QUESTIONS.length;
+    var out = [];
+    for (var i = 0; i < QUIZ_PER_DAY; i++) out.push(QUESTIONS[(start + i * 3) % QUESTIONS.length]);
+    return out;
+  }
+
+  function renderTask() {
+    var claimed = state.lastDaily === today();
+    document.getElementById("dailyText").textContent = claimed
+      ? "今天的 3 张抽卡券已经领过了，明天再来。"
+      : "每天可以领 12 张抽卡券。";
+    var btn = document.getElementById("claimDaily");
+    btn.disabled = claimed;
+    btn.textContent = claimed ? "今日已领取" : "领取今日 12 张抽卡券";
+
+    if (state.quiz.day !== today()) {
+      state.quiz = { day: today(), done: 0, correct: 0 };
+    }
+
+    var idx = state.quiz.done;
+    document.getElementById("quizText").textContent =
+      "已答 " + Math.min(idx, QUIZ_PER_DAY) + " / " + QUIZ_PER_DAY + " 题，已得 " + (state.quiz.correct * 2) + " 张抽卡券";
+    document.getElementById("quizBar").style.width = Math.min(100, (idx / QUIZ_PER_DAY) * 100) + "%";
+
+    var box = document.getElementById("quizBox");
+    if (idx >= QUIZ_PER_DAY) {
+      box.innerHTML = '<p style="color:#8794ad;margin-top:10px">今天的 10 道题答完了，明天再来。</p>';
+      return;
+    }
+
+    var q = todayQuestions()[idx];
+    box.innerHTML = '<div class="quiz-q"><h4>' + (idx + 1) + ". " + q.q + '</h4><div class="opts">' +
+      q.o.map(function (t, i) {
+        return '<button class="opt" data-opt="' + i + '">' + t + '</button>';
+      }).join("") + '</div></div>';
+
+    Array.prototype.forEach.call(box.querySelectorAll("[data-opt]"), function (b) {
+      b.onclick = function () {
+        var pick = +b.getAttribute("data-opt");
+        Array.prototype.forEach.call(box.querySelectorAll("[data-opt]"), function (x, i) {
+          x.disabled = true;
+          if (i === q.a) x.classList.add("right");
+          else if (i === pick) x.classList.add("wrong");
+        });
+        state.quiz.done++;
+        if (pick === q.a) {
+          state.quiz.correct++;
+          state.tickets += 2;
+          toast("答对了，+2 张抽卡券");
+        } else {
+          toast("这题答错了");
+        }
+        save(); renderTickets();
+        setTimeout(renderTask, 750);
+      };
+    });
+  }
+
+  /* ================= 公共 ================= */
+  function renderTickets() {
+    document.getElementById("ticketCount").textContent = state.tickets;
+  }
+  function toast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { el.classList.remove("show"); }, 2000);
+  }
+  function renderRecent() {
+    document.getElementById("recent").innerHTML = state.recent.map(function (id) {
+      var c = CARDS.filter(function (x) { return x.id === id; })[0];
+      return c ? cardHTML(c, true, false) : "";
+    }).join("");
+  }
+  function renderAll() {
+    renderTickets(); renderSquad(); renderDex(); renderTask(); renderRecent();
+  }
+
+  document.querySelectorAll(".tabs button").forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll(".tabs button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      document.querySelectorAll(".view").forEach(function (v) {
+        v.classList.toggle("on", v.id === "view-" + b.getAttribute("data-tab"));
+      });
+    };
+  });
+
+  document.getElementById("drawOne").onclick = function () { draw(1); };
+  document.getElementById("drawTen").onclick = function () { draw(10); };
+  document.getElementById("autoFill").onclick = autoFill;
+  document.getElementById("clearSquad").onclick = function () {
+    state.squad = []; save(); renderSquad();
+  };
+  document.getElementById("claimDaily").onclick = function () {
+    if (state.lastDaily === today()) return;
+    state.lastDaily = today();
+    state.tickets += 12;
+    save(); renderTickets(); renderTask();
+    toast("领取成功，+12 张抽卡券");
+  };
+
+  load();
+  renderAll();
+})();
+</script>
+</body>
+</html>
