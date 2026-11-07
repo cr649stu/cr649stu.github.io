@@ -4,9 +4,10 @@
 
 | 文件 | 页面 |
 | --- | --- |
-| `index.html` | 首页（浅蓝渐变，居中：你好 / 名字 / 一句话 / 三个入口） |
+| `index.html` | 首页（浅蓝渐变，居中：你好 / 名字 / 一句话 / 四个入口） |
 | `education.html` | 教育背景（纵向时间线：武汉理工大学 · 数字经济） |
 | `skills.html` | 专业技能（两列六张卡片） |
+| `hobbies.html` | 个人爱好（足球，附一个相关作品入口） |
 | `works.html` | 个人作品（七张作品卡） |
 | `works-before-graduation.html` | 「毕业之前」项目页：标题 + 说明 + **原型窗口**（一屏内） |
 | `demo-before-graduation.html` | 「毕业之前」可点原型：记录 / 互助 / 纪念 都能点进去 |
@@ -52,7 +53,7 @@
 ## 上传到 GitHub Pages
 
 1. 打开 `https://github.com/CR649STU/cr649stu.github.io/upload/main`
-2. 把 **14 个文件**和 **assets 文件夹**一起拖进去：
+2. 把 **15 个文件**和 **assets 文件夹**一起拖进去：
    `works-before-graduation.html`、`demo-before-graduation.html`、
    `works-clubhub.html`、`demo-clubhub.html`、`works-timer.html`、`demo-timer.html`、
    `works-gacha.html`、`demo-gacha.html`、
