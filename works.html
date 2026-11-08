@@ -4,9 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>个人作品 · 王开怀</title>
-<meta name="description" content="王开怀的个人作品：校园全栈站点、图书借阅系统、学生学籍系统。" />
+<meta name="description" content="王开怀的七个作品：校园全栈站点、足球抽卡游戏、社团信息管理系统、计时器等，均可在线打开。" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231b3a8b'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="style.css" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="个人作品 · 王开怀" />
+<meta property="og:description" content="王开怀的七个作品：校园全栈站点、足球抽卡游戏、社团信息管理系统、计时器等，均可在线打开。" />
+<meta property="og:url" content="https://cr649stu.github.io/works.html" />
+<meta name="twitter:card" content="summary" />
+<link rel="canonical" href="https://cr649stu.github.io/works.html" />
 </head>
 <body>
 
@@ -50,7 +56,9 @@
         <li>Express</li>
         <li>SQLite</li>
       </ul>
+      <p class="work-hard"><b>难点</b>三个栏目共用一套账号与数据库，下单要在事务里扣库存。</p>
       <a class="work-link" href="works-before-graduation.html">打开可点原型 →</a>
+      <a class="work-link" href="https://github.com/CR649STU/campus-fullstack" target="_blank" rel="noopener">查看源码 →</a>
     </article>
 
     <article class="work"><span class="work-index">02</span>
@@ -64,7 +72,9 @@
         <li>SVG 立绘</li>
         <li>localStorage</li>
       </ul>
+      <p class="work-hard"><b>难点</b>367 张卡面全部由内嵌 SVG 现画，不依赖任何图片。</p>
       <a class="work-link" href="works-gacha.html">打开游戏 →</a>
+      <a class="work-link" href="https://github.com/CR649STU/football-pack" target="_blank" rel="noopener">查看源码 →</a>
     </article>
 
     <article class="work"><span class="work-index">03</span>
@@ -79,7 +89,9 @@
         <li>RLS</li>
         <li>触发器</li>
       </ul>
+      <p class="work-hard"><b>难点</b>并发报名靠数据库触发器兜底，RLS 决定谁能看到什么。</p>
       <a class="work-link" href="works-clubhub.html">打开可点原型 →</a>
+      <a class="work-link" href="https://github.com/CR649STU/clubhub" target="_blank" rel="noopener">查看源码 →</a>
     </article>
 
     <article class="work"><span class="work-index">04</span>
@@ -93,6 +105,7 @@
         <li>CSS</li>
         <li>原生 JS</li>
       </ul>
+      <p class="work-hard"><b>难点</b>用时间戳而不是每秒累加，切到后台再回来也不走样。</p>
       <a class="work-link" href="works-timer.html">打开计时器 →</a>
     </article>
 
@@ -109,6 +122,7 @@
         <li>原生 JS</li>
         <li>事务</li>
       </ul>
+      <p class="work-hard"><b>难点</b>借还与库存在同一事务里完成，逾期清单按日期自动汇总。</p>
     </article>
 
     <article class="work"><span class="work-index">06</span>
@@ -123,6 +137,7 @@
         <li>RLS</li>
         <li>单文件前端</li>
       </ul>
+      <p class="work-hard"><b>难点</b>RLS、触发器审计与 Realtime 三者配合。</p>
     </article>
 
     <article class="work"><span class="work-index">07</span>
@@ -136,9 +151,15 @@
         <li>CSS</li>
         <li>GitHub Pages</li>
       </ul>
+      <p class="work-hard"><b>难点</b>无框架、无构建，四个演示以内嵌窗口直接运行。</p>
     </article>
   </section>
 </main>
+
+<footer class="site-foot">
+  <span>© 2026 王开怀</span>
+  <span class="site-foot-links"><a href="mailto:3575699310@qq.com">3575699310@qq.com</a><span>·</span><a href="https://github.com/CR649STU">GitHub</a></span>
+</footer>
 
 </body>
 </html>

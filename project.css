@@ -140,3 +140,13 @@
   .proto-frame { height: clamp(420px, 66vh, 640px); }
   .proto-open { margin-left: 0; }
 }
+
+.proto-note a {
+  color: var(--gray-text);
+  border-bottom: 1px solid var(--gray-line);
+  transition: color var(--ease), border-color var(--ease);
+}
+.proto-note a:hover {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
