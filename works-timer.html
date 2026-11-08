@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>计时器 · 王开怀</title>
 <meta name="description" content="一个单文件的静态计时器：开始、暂停、重置，HTML + CSS + 原生 JS，无依赖。" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231b3a8b'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b3a8b'/%3E%3Cg stroke='%23ffffff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M8 9h16'/%3E%3Cpath d='M8 15h16'/%3E%3Cpath d='M9.5 22h13'/%3E%3Cpath d='M16 9v13'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="project.css" />
 <meta property="og:type" content="website" />
@@ -19,7 +19,7 @@
 
 <header class="topbar">
   <div class="bar">
-    <a class="brand" href="index.html">王开怀</a>
+    <a class="brand" href="index.html"><span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><g stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M8 9h16"/><path d="M8 15h16"/><path d="M9.5 22h13"/><path d="M16 9v13"/></g></svg></span>王开怀</a>
     <nav class="menu" aria-label="主导航">
       <a href="index.html">返回首页</a>
       <a href="works.html" class="is-active is-featured">个人作品</a>
@@ -61,6 +61,12 @@
   <p class="proto-note">
     一个 HTML 文件、一段 CSS、一段原生 JS，没有任何依赖，也没有构建步骤。
   </p>
+  <ul class="proj-points">
+    <li>用时间戳差值计时，切到后台再回来不会漂移</li>
+    <li>requestAnimationFrame 重绘，按钮状态与显示同步</li>
+    <li>单文件、零依赖，可直接嵌进任何页面</li>
+  </ul>
+
 </main>
 
 <footer class="site-foot">

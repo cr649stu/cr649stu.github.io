@@ -150,3 +150,27 @@
   color: var(--blue);
   border-bottom-color: var(--blue);
 }
+/* 项目页的技术要点 */
+.proj-points {
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.proj-points li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--gray-body);
+}
+.proj-points li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: .72em;
+  width: 6px;
+  height: 1.5px;
+  background: var(--blue);
+}

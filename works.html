@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>个人作品 · 王开怀</title>
 <meta name="description" content="王开怀的七个作品：校园全栈站点、足球抽卡游戏、社团信息管理系统、计时器等，均可在线打开。" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231b3a8b'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231b3a8b'/%3E%3Cg stroke='%23ffffff' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M8 9h16'/%3E%3Cpath d='M8 15h16'/%3E%3Cpath d='M9.5 22h13'/%3E%3Cpath d='M16 9v13'/%3E%3C/g%3E%3C/svg%3E" />
 <link rel="stylesheet" href="style.css" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="个人作品 · 王开怀" />
@@ -18,7 +18,7 @@
 
 <header class="topbar">
   <div class="bar">
-    <a class="brand" href="index.html">王开怀</a>
+    <a class="brand" href="index.html"><span class="brand-logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><g stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M8 9h16"/><path d="M8 15h16"/><path d="M9.5 22h13"/><path d="M16 9v13"/></g></svg></span>王开怀</a>
     <nav class="menu" aria-label="主导航">
       <a href="index.html">返回首页</a>
       <a href="works.html" class="is-active is-featured" aria-current="page">个人作品</a>
@@ -42,8 +42,18 @@
     </dl>
   </header>
 
+  <nav class="works-index" aria-label="作品索引">
+    <a href="#p1">01 毕业之前</a>
+    <a href="#p2">02 传奇抽卡</a>
+    <a href="#p3">03 社团活动管理</a>
+    <a href="#p4">04 计时器</a>
+    <a href="#p5">05 栖木书房</a>
+    <a href="#p6">06 青禾学籍</a>
+    <a href="#p7">07 本站</a>
+  </nav>
+
   <section class="works">
-    <article class="work work-wide"><span class="work-index">01</span>
+    <article class="work work-wide" id="p1"><span class="work-index">01</span>
       <h2>毕业之前 · 校园全栈站点</h2>
       <p>
         把个人博客、问答社区与迷你商城合并成一个校园毕业主题站点，
@@ -61,7 +71,7 @@
       <a class="work-link" href="https://github.com/CR649STU/campus-fullstack" target="_blank" rel="noopener">查看源码 →</a>
     </article>
 
-    <article class="work"><span class="work-index">02</span>
+    <article class="work" id="p2"><span class="work-index">02</span>
       <h2>传奇抽卡 · 足球球员卡牌游戏</h2>
       <p>
         301 名球员、367 张卡，传奇 / 史诗 / 精选 / 普通四种稀有度；每日赠券、
@@ -77,7 +87,7 @@
       <a class="work-link" href="https://github.com/CR649STU/football-pack" target="_blank" rel="noopener">查看源码 →</a>
     </article>
 
-    <article class="work"><span class="work-index">03</span>
+    <article class="work" id="p3"><span class="work-index">03</span>
       <h2>社团活动管理 · 信息管理系统</h2>
       <p>
         四张表（用户资料 / 社团 / 活动 / 报名）串起报名流程：同一活动同一人只能报一次，
@@ -94,7 +104,7 @@
       <a class="work-link" href="https://github.com/CR649STU/clubhub" target="_blank" rel="noopener">查看源码 →</a>
     </article>
 
-    <article class="work"><span class="work-index">04</span>
+    <article class="work" id="p4"><span class="work-index">04</span>
       <h2>计时器 · 静态小工具</h2>
       <p>
         开始、暂停、重置三个按钮，时分秒显示。单文件 HTML + CSS + 原生 JS，
@@ -109,7 +119,7 @@
       <a class="work-link" href="works-timer.html">打开计时器 →</a>
     </article>
 
-    <article class="work"><span class="work-index">05</span>
+    <article class="work" id="p5"><span class="work-index">05</span>
       <h2>栖木书房 · 图书借阅管理</h2>
       <p>
         零第三方依赖的图书借还系统：借出与归还在同一事务里修正库存，
@@ -125,7 +135,7 @@
       <p class="work-hard"><b>难点</b>借还与库存在同一事务里完成，逾期清单按日期自动汇总。</p>
     </article>
 
-    <article class="work"><span class="work-index">06</span>
+    <article class="work" id="p6"><span class="work-index">06</span>
       <h2>青禾学籍 · 学生信息管理</h2>
       <p>
         单文件前端配 Supabase 后端：Auth 登录、RLS 行级权限、触发器审计，
@@ -140,7 +150,7 @@
       <p class="work-hard"><b>难点</b>RLS、触发器审计与 Realtime 三者配合。</p>
     </article>
 
-    <article class="work"><span class="work-index">07</span>
+    <article class="work" id="p7"><span class="work-index">07</span>
       <h2>本站 · 个人主页</h2>
       <p>
         你现在看的这个站：手写的 HTML 与 CSS，
