@@ -189,9 +189,9 @@
       '<div class="card center">' +
         '<h1>登录后台</h1>' +
         '<p>用 Supabase 里创建的账号登录，只有登录后才能修改作品。</p>' +
-        '<form id="loginForm">' +
-          '<label class="field"><span>邮箱</span><input id="email" type="email" required placeholder="you@example.com" /></label>' +
-          '<label class="field"><span>密码</span><input id="password" type="password" required placeholder="••••••••" /></label>' +
+        '<form id="loginForm" autocomplete="off">' +
+          '<label class="field"><span>邮箱</span><input id="email" type="email" name="email" autocomplete="username" required placeholder="you@example.com" /></label>' +
+          '<label class="field"><span>密码</span><input id="password" type="password" name="password" autocomplete="new-password" required placeholder="••••••••" /></label>' +
           '<button class="btn primary" type="submit" style="width:100%">登录</button>' +
         '</form>' +
       '</div>';
