@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>作品后台 · 王开怀</title>
+<style>
+  :root{
+    --white:#fff; --blue:#1b3a8b; --ink:#1f242e; --gray:#6b7280;
+    --faint:#98a0ad; --line:#e4e7ec; --soft:#f6f8fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--soft);color:var(--ink);
+    font:14px/1.7 "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif}
+  a{color:var(--blue)}
+  button{font:inherit;cursor:pointer}
+  input,textarea{font:inherit;color:var(--ink)}
+
+  .top{background:#fff;border-bottom:1px solid var(--line)}
+  .top-in{max-width:1040px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:14px}
+  .top b{font-size:15px;letter-spacing:.04em;color:var(--blue)}
+  .top .sp{flex:1}
+  .who{font-size:12.5px;color:var(--gray)}
+
+  .btn{padding:8px 16px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);transition:.2s}
+  .btn:hover{border-color:var(--blue);color:var(--blue)}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .btn.primary:hover{background:#16306f;color:#fff}
+  .btn.small{padding:5px 10px;font-size:12.5px;border-radius:7px}
+  .btn.danger:hover{border-color:#c0392b;color:#c0392b}
+
+  main{max-width:1040px;margin:0 auto;padding:26px 24px 60px}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px}
+  .center{max-width:380px;margin:8vh auto 0}
+  .card h1{margin:0 0 6px;font-size:19px;color:var(--blue)}
+  .card p{margin:0 0 16px;color:var(--gray);font-size:13px}
+  .field{display:block;margin-bottom:12px}
+  .field span{display:block;font-size:12px;color:var(--gray);margin-bottom:5px}
+  .field input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;outline:none}
+  .field input:focus{border-color:var(--blue)}
+
+  .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .toolbar .sp{flex:1}
+  .hint{font-size:12.5px;color:var(--gray)}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);
+    border-radius:12px;overflow:hidden}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;letter-spacing:.1em;color:var(--faint);font-weight:500;background:var(--soft)}
+  tr:last-child td{border-bottom:0}
+  td .num{color:var(--faint);font-variant-numeric:tabular-nums}
+  td .sub{display:block;font-size:12px;color:var(--gray);margin-top:2px}
+  .tags{display:flex;flex-wrap:wrap;gap:4px}
+  .tags i{font-style:normal;font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 6px;color:var(--gray)}
+  .acts{display:flex;flex-wrap:wrap;gap:6px}
+
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-start;
+    justify-content:center;padding:40px 16px;overflow:auto;z-index:20}
+  .modal.open{display:flex}
+  .panel{width:100%;max-width:560px;background:#fff;border-radius:16px;padding:24px}
+  .panel h2{margin:0 0 14px;font-size:17px;color:var(--blue)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .panel textarea{width:100%;min-height:78px;padding:9px 11px;border:1px solid var(--line);
+    border-radius:8px;outline:none;resize:vertical}
+  .panel textarea:focus{border-color:var(--blue)}
+  .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray);margin:4px 0 14px}
+  .panel-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:#111827;color:#fff;
+    padding:9px 18px;border-radius:9px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:30}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  code{background:#eef2fb;color:var(--blue);padding:1px 5px;border-radius:4px;font-size:12.5px}
+  @media (max-width:640px){
+    .row{grid-template-columns:1fr}
+    th:nth-child(3),td:nth-child(3){display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <b>作品后台</b>
+    <span class="sp"></span>
+    <span class="who" id="who"></span>
+    <button class="btn small" id="logoutBtn" hidden>退出</button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div class="modal" id="modal">
+  <div class="panel">
+    <h2 id="formTitle">新增作品</h2>
+    <label class="field"><span>标题</span><input id="f-title" placeholder="例如：计时器 · 静态小工具" /></label>
+    <label class="field"><span>简介</span><textarea id="f-summary" placeholder="一两句话说清楚它是什么"></textarea></label>
+    <div class="row">
+      <label class="field"><span>标签（逗号分隔）</span><input id="f-tags" placeholder="React, SQLite" /></label>
+      <label class="field"><span>演示按钮文字</span><input id="f-demoLabel" placeholder="打开可点原型 →" /></label>
+    </div>
+    <label class="field"><span>技术难点</span><input id="f-hard" placeholder="一句话说明难点" /></label>
+    <div class="row">
+      <label class="field"><span>演示链接</span><input id="f-demo" placeholder="works-xxx.html 或 https://…" /></label>
+      <label class="field"><span>源码链接</span><input id="f-source" placeholder="https://github.com/…" /></label>
+    </div>
+    <label class="check"><input type="checkbox" id="f-wide" /> 通栏显示（第一张卡常见）</label>
+    <div class="panel-actions">
+      <button class="btn" id="cancelBtn">取消</button>
+      <button class="btn primary" id="saveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="supabase-config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var cfg = window.SITE_CONFIG || {};
+  var CONFIGURED = !!(cfg.url && cfg.anonKey);
+  var SESSION_KEY = "works-admin-session";
+
+  var app = document.getElementById("app");
+  var modal = document.getElementById("modal");
+  var toastEl = document.getElementById("toast");
+  var whoEl = document.getElementById("who");
+  var logoutBtn = document.getElementById("logoutBtn");
+
+  var state = { token: null, email: "", works: [], editing: null };
+
+  /* ---------- 基础 ---------- */
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { toastEl.classList.remove("show"); }, 2400);
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function headers(extra) {
+    var h = { apikey: cfg.anonKey, "Content-Type": "application/json" };
+    h.Authorization = "Bearer " + (state.token || cfg.anonKey);
+    if (extra) Object.keys(extra).forEach(function (k) { h[k] = extra[k]; });
+    return h;
+  }
+
+  function api(path, opts) {
+    opts = opts || {};
+    return fetch(cfg.url + path, {
+      method: opts.method || "GET",
+      headers: headers(opts.headers),
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      return r.text().then(function (text) {
+        var data = text ? JSON.parse(text) : null;
+        if (!r.ok) {
+          var msg = (data && (data.message || data.error_description || data.hint)) || ("请求失败 " + r.status);
+          throw new Error(msg);
+        }
+        return data;
+      });
+    });
+  }
+
+  /* ---------- 视图 ---------- */
+  function renderNotice() {
+    logoutBtn.hidden = true;
+    whoEl.textContent = "";
+    app.innerHTML =
+      '<div class="card center">' +
+        '<h1>还没配置数据库</h1>' +
+        '<p>打开 <code>supabase-config.js</code>，把 Supabase 项目的地址和 anon key 填进去，刷新这个页面即可使用。</p>' +
+        '<p style="margin:0">数据表脚本在同目录的 <code>supabase-works.sql</code>，到 Supabase 的 SQL Editor 里执行一次。</p>' +
+      '</div>';
+  }
+
+  function renderLogin() {
+    logoutBtn.hidden = true;
+    whoEl.textContent = "";
+    app.innerHTML =
+      '<div class="card center">' +
+        '<h1>登录后台</h1>' +
+        '<p>用 Supabase 里创建的账号登录，只有登录后才能修改作品。</p>' +
+        '<form id="loginForm">' +
+          '<label class="field"><span>邮箱</span><input id="email" type="email" required placeholder="you@example.com" /></label>' +
+          '<label class="field"><span>密码</span><input id="password" type="password" required placeholder="••••••••" /></label>' +
+          '<button class="btn primary" type="submit" style="width:100%">登录</button>' +
+        '</form>' +
+      '</div>';
+
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = document.getElementById("email").value.trim();
+      var password = document.getElementById("password").value;
+      signIn(email, password);
+    });
+  }
+
+  function signIn(email, password) {
+    fetch(cfg.url + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: { apikey: cfg.anonKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok) throw new Error(d.error_description || d.msg || "登录失败");
+        return d;
+      });
+    }).then(function (session) {
+      state.token = session.access_token;
+      state.email = (session.user && session.user.email) || email;
+      try {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ token: state.token, email: state.email }));
+      } catch (e) {}
+      loadWorks();
+    }).catch(function (err) { toast(err.message); });
+  }
+
+  function restoreSession() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch (e) {}
+    if (saved && saved.token) {
+      state.token = saved.token;
+      state.email = saved.email || "";
+      loadWorks(true);
+    } else {
+      renderLogin();
+    }
+  }
+
+  function signOut() {
+    state.token = null;
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+    renderLogin();
+  }
+
+  /* ---------- 列表 ---------- */
+  function loadWorks(silent) {
+    api("/rest/v1/works?select=*&order=sort_index.asc").then(function (rows) {
+      state.works = rows || [];
+      renderList();
+    }).catch(function (err) {
+      if (silent) { renderLogin(); return; }
+      toast(err.message);
+    });
+  }
+
+  function renderList() {
+    logoutBtn.hidden = false;
+    whoEl.textContent = state.email ? state.email : "已登录";
+
+    var rows = state.works.map(function (w, i) {
+      var tags = (w.tags || []).map(function (t) { return "<i>" + esc(t) + "</i>"; }).join("");
+      return '<tr>' +
+        '<td><span class="num">' + String(i + 1).padStart(2, "0") + '</span></td>' +
+        '<td><strong>' + esc(w.title) + '</strong>' +
+          (w.wide ? '<span class="sub">通栏</span>' : '') +
+          '<span class="sub">' + esc((w.summary || "").slice(0, 42)) + '…</span></td>' +
+        '<td><div class="tags">' + tags + '</div></td>' +
+        '<td class="acts">' +
+          '<button class="btn small" data-move="up" data-id="' + w.id + '">↑</button>' +
+          '<button class="btn small" data-move="down" data-id="' + w.id + '">↓</button>' +
+          '<button class="btn small" data-edit="' + w.id + '">编辑</button>' +
+          '<button class="btn small danger" data-del="' + w.id + '">删除</button>' +
+        '</td>' +
+      '</tr>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="toolbar">' +
+        '<button class="btn primary" id="addBtn">新增作品</button>' +
+        '<span class="hint">共 ' + state.works.length + ' 条 · 保存后刷新作品页生效</span>' +
+        '<span class="sp"></span>' +
+        '<a class="btn" href="works.html" target="_blank" rel="noopener">查看作品页 ↗</a>' +
+      '</div>' +
+      (state.works.length
+        ? '<table><thead><tr><th style="width:56px">#</th><th>作品</th><th>标签</th><th style="width:190px">操作</th></tr></thead><tbody>' + rows + '</tbody></table>'
+        : '<div class="card">还没有作品，点「新增作品」开始。</div>');
+
+    document.getElementById("addBtn").onclick = function () { openEditor(null); };
+    Array.prototype.forEach.call(app.querySelectorAll("[data-edit]"), function (b) {
+      b.onclick = function () { openEditor(find(b.getAttribute("data-edit"))); };
+    });
+    Array.prototype.forEach.call(app.querySelectorAll("[data-del]"), function (b) {
+      b.onclick = function () { remove(b.getAttribute("data-del")); };
+    });
+    Array.prototype.forEach.call(app.querySelectorAll("[data-move]"), function (b) {
+      b.onclick = function () { move(b.getAttribute("data-id"), b.getAttribute("data-move")); };
+    });
+  }
+
+  function find(id) {
+    for (var i = 0; i < state.works.length; i++) if (state.works[i].id === id) return state.works[i];
+    return null;
+  }
+
+  /* ---------- 编辑 ---------- */
+  function openEditor(row) {
+    state.editing = row || null;
+    document.getElementById("formTitle").textContent = row ? "编辑作品" : "新增作品";
+    document.getElementById("f-title").value = row ? row.title : "";
+    document.getElementById("f-summary").value = row ? row.summary : "";
+    document.getElementById("f-tags").value = row ? (row.tags || []).join(", ") : "";
+    document.getElementById("f-hard").value = row ? row.hard_note : "";
+    document.getElementById("f-demo").value = row ? row.demo_url : "";
+    document.getElementById("f-demoLabel").value = row ? row.demo_label : "打开 →";
+    document.getElementById("f-source").value = row ? row.source_url : "";
+    document.getElementById("f-wide").checked = row ? !!row.wide : false;
+    modal.classList.add("open");
+  }
+
+  function closeEditor() {
+    modal.classList.remove("open");
+    state.editing = null;
+  }
+
+  function save() {
+    var title = document.getElementById("f-title").value.trim();
+    if (!title) { toast("标题不能为空"); return; }
+
+    var payload = {
+      title: title,
+      summary: document.getElementById("f-summary").value.trim(),
+      tags: document.getElementById("f-tags").value.split(",").map(function (s) { return s.trim(); }).filter(Boolean),
+      hard_note: document.getElementById("f-hard").value.trim(),
+      demo_url: document.getElementById("f-demo").value.trim(),
+      demo_label: document.getElementById("f-demoLabel").value.trim() || "打开 →",
+      source_url: document.getElementById("f-source").value.trim(),
+      wide: document.getElementById("f-wide").checked
+    };
+
+    var req;
+    if (state.editing) {
+      req = api("/rest/v1/works?id=eq." + state.editing.id, {
+        method: "PATCH",
+        headers: { Prefer: "return=minimal" },
+        body: payload
+      });
+    } else {
+      payload.sort_index = state.works.length + 1;
+      req = api("/rest/v1/works", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: payload
+      });
+    }
+
+    req.then(function () {
+      closeEditor();
+      toast(state.editing ? "已保存" : "已新增");
+      loadWorks();
+    }).catch(function (err) { toast(err.message); });
+  }
+
+  function remove(id) {
+    if (!window.confirm("确定删除这条作品？")) return;
+    api("/rest/v1/works?id=eq." + id, { method: "DELETE" })
+      .then(function () { toast("已删除"); loadWorks(); })
+      .catch(function (err) { toast(err.message); });
+  }
+
+  function move(id, dir) {
+    var list = state.works.slice();
+    var i = -1;
+    for (var k = 0; k < list.length; k++) if (list[k].id === id) i = k;
+    if (i < 0) return;
+    var j = dir === "up" ? i - 1 : i + 1;
+    if (j < 0 || j >= list.length) return;
+
+    var a = list[i], b = list[j];
+    var aIndex = a.sort_index, bIndex = b.sort_index;
+    Promise.all([
+      api("/rest/v1/works?id=eq." + a.id, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: { sort_index: bIndex } }),
+      api("/rest/v1/works?id=eq." + b.id, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: { sort_index: aIndex } })
+    ]).then(function () { loadWorks(); }).catch(function (err) { toast(err.message); });
+  }
+
+  /* ---------- 绑定 ---------- */
+  document.getElementById("cancelBtn").onclick = closeEditor;
+  document.getElementById("saveBtn").onclick = save;
+  modal.addEventListener("click", function (e) { if (e.target === modal) closeEditor(); });
+  logoutBtn.onclick = signOut;
+
+  if (!CONFIGURED) renderNotice();
+  else restoreSession();
+})();
+</script>
+</body>
+</html>

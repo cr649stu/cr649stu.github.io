@@ -37,12 +37,12 @@
       <p class="page-sub">七个作品，都可以打开试一下。</p>
     </div>
     <dl class="head-meta">
-      <div><dt>作品</dt><dd>07</dd></div>
+      <div><dt>作品</dt><dd id="worksCount">07</dd></div>
       <div><dt>类型</dt><dd>全栈 · 数据 · 小工具</dd></div>
     </dl>
   </header>
 
-  <nav class="works-index" aria-label="作品索引">
+  <nav class="works-index" id="worksIndex" aria-label="作品索引">
     <a href="#p1">01 毕业之前</a>
     <a href="#p2">02 传奇抽卡</a>
     <a href="#p3">03 社团活动管理</a>
@@ -52,7 +52,7 @@
     <a href="#p7">07 本站</a>
   </nav>
 
-  <section class="works">
+  <section class="works" id="worksList">
     <article class="work work-wide" id="p1"><span class="work-index">01</span>
       <h2>毕业之前 · 校园全栈站点</h2>
       <p>
@@ -171,5 +171,7 @@
   <span class="site-foot-links"><a href="mailto:3575699310@qq.com">3575699310@qq.com</a><span>·</span><a href="https://github.com/CR649STU">GitHub</a></span>
 </footer>
 
+<script src="supabase-config.js"></script>
+<script src="works-db.js"></script>
 </body>
 </html>

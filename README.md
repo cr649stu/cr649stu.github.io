@@ -71,3 +71,30 @@
 - 技能：`skills.html` 的六张卡片
 - 作品：`works.html` 的四张卡片
 - 原型内容：`demo-before-graduation.html` 顶部的 `posts` / `questions` / `products` 三个数组
+## 作品后台（Supabase）
+
+后台只管理「作品」：新增、编辑、删除、上下移动。前端页面读不到数据库时，会回退到 HTML 里的静态内容，所以数据库挂了网站也不会空。
+
+### 一次性配置（约 5 分钟）
+
+1. 打开 [supabase.com](https://supabase.com)，新建一个免费项目，记下 **Project URL** 和 **anon public key**。
+2. 进 **SQL Editor**，把 `supabase-works.sql` 全文粘贴执行（建表、策略、写入现有 7 条作品）。
+3. 进 **Authentication → Users → Add user**，用邮箱和密码建一个管理员账号。
+4. 打开 `supabase-config.js`，填入地址和 key：
+
+   ```js
+   window.SITE_CONFIG = {
+     url: "https://xxxx.supabase.co",
+     anonKey: "eyJhbGciOi..."
+   };
+   ```
+
+5. 重新上传这 5 个文件：`works.html`、`admin.html`、`works-db.js`、`supabase-config.js`、`supabase-works.sql`。
+
+### 日常使用
+
+打开 `https://cr649stu.github.io/admin.html` → 用第 3 步的账号登录 → 增删改、调顺序 → 保存后刷新作品页即可看到。
+
+- 没登录的人打开 `admin.html` 只能看到登录框，写操作由 RLS 拦住
+- 后台页面加了 `noindex`，不会被搜索引擎收录
+- 演示链接可以填站内相对路径（如 `works-timer.html`）或完整网址
